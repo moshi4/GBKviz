@@ -4,7 +4,7 @@ from typing import List
 import streamlit as st
 from streamlit.delta_generator import DeltaGenerator
 
-from gbkviz.genbank import read_upload_gbk_file
+from gbkviz.genbank import Genbank, read_upload_gbk_file
 from gbkviz.genome_diagram import cds_feature_list2fig
 
 st.header("GBKviz: Genbank Data Visualization Tool")
@@ -23,7 +23,7 @@ with st.sidebar:
 
     # Features select option
     target_features = st.multiselect(
-        label="Features select option",
+        label="Feature Selection",
         options=["CDS", "gene", "tRNA", "misc_feature"],
         default=["CDS"],
     )
@@ -42,14 +42,16 @@ with st.sidebar:
         "misc_feature": misc_color,
     }
 
-    #
-    label_type = st.selectbox(
-        label="Features Label",
+    # Selectbox widgets
+    selectbox_cols: List[DeltaGenerator]
+    selectbox_cols = st.columns(2)
+    label_type = selectbox_cols[0].selectbox(
+        label="Feature Label",
         options=["gene", "protein_id", "locus_tag", "product"],
         index=0,
     )
-    symbol = st.selectbox(
-        label="Features Symbol",
+    symbol = selectbox_cols[1].selectbox(
+        label="Feature Symbol",
         options=["BIGARROW", "BOX", "ARROW", "OCTO", "JAGGY"],
         index=0,
     )
@@ -90,6 +92,9 @@ with st.sidebar:
 ###########################################################
 if upload_file_list:
 
+    gbk_list: List[Genbank] = []
+    min_value_list: List[int] = []
+    max_value_list: List[int] = []
     gbk_info_list = []
     gbk_info_placeholder = st.empty()
     image_placeholder = st.empty()
@@ -102,9 +107,8 @@ if upload_file_list:
 
         for upload_gbk_file in upload_file_list:
             gbk = read_upload_gbk_file(upload_gbk_file)
-            cds_feature_list = gbk.extract_features(target_features)
+            gbk_list.append(gbk)
             max_length = gbk.max_length
-            cds_count = len(cds_feature_list)
 
             gbk_name = Path(gbk.name).stem
 
@@ -126,15 +130,18 @@ if upload_file_list:
             )
             gbk_info_list.append(f"{gbk_name} ({min_value:,} - {max_value:,} bp)")
 
+            min_value_list.append(int(min_value))
+            max_value_list.append(int(max_value))
+
     all_gbk_info = ""
     for cnt, gbk_info in enumerate(gbk_info_list, 1):
         all_gbk_info += f"Track{cnt:02d}: {gbk_info}  \n"
     gbk_info_placeholder.markdown(all_gbk_info)
 
     fig_bytes = cds_feature_list2fig(
-        cds_feature_list=cds_feature_list,
-        start_pos=int(min_value),
-        end_pos=int(max_value),
+        gbk_list=gbk_list,
+        start_pos_list=min_value_list,
+        end_pos_list=max_value_list,
         feature2color=feature2color,
         fig_width=fig_width,
         fig_track_height=fig_track_height,
@@ -144,6 +151,7 @@ if upload_file_list:
         label_type=label_type,
         symbol=symbol,
         label_angle=label_angle,
+        target_features=target_features,
     )
 
     image_placeholder.image(fig_bytes, use_column_width="never")
