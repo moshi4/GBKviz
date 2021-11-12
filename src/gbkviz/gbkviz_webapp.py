@@ -4,8 +4,8 @@ from typing import List
 import streamlit as st
 from streamlit.delta_generator import DeltaGenerator
 
-from genbank import read_upload_gbk_file
-from genome_diagram import cds_feature_list2fig
+from gbkviz.genbank import read_upload_gbk_file
+from gbkviz.genome_diagram import cds_feature_list2fig
 
 st.title("GBKviz: Genbank Data Visualization")
 
@@ -21,6 +21,13 @@ with st.sidebar:
         accept_multiple_files=True,
     )
 
+    # Features select option
+    target_features = st.multiselect(
+        label="Features select option",
+        options=["CDS", "gene", "tRNA", "misc_feature"],
+        default=["CDS"],
+    )
+
     # Colorpicker widgets
     color_cols: List[DeltaGenerator]
     color_cols = st.columns(4)
@@ -28,12 +35,6 @@ with st.sidebar:
     gene_color = color_cols[1].color_picker(label="gene", value="#0FE8E4")
     trna_color = color_cols[2].color_picker(label="tRNA", value="#E8630F")
     misc_color = color_cols[3].color_picker(label="misc", value="#E80FC6")
-
-    target_features = st.multiselect(
-        label="Features",
-        options=["CDS", "gene", "tRNA", "misc_feature"],
-        default=["CDS"],
-    )
 
     #
     label_type = st.selectbox(
@@ -56,13 +57,25 @@ with st.sidebar:
     slider_cols = List[DeltaGenerator]
     slider_cols = st.columns(2)
     fig_width = slider_cols[0].slider(
-        label="Fig Width(cm)", min_value=10, max_value=100, value=30, step=5
+        label="Fig Width(cm)",
+        min_value=10,
+        max_value=100,
+        value=30,
+        step=5,
     )
     fig_track_height = slider_cols[1].slider(
-        label="Fig Track Height(cm)", min_value=5, max_value=100, value=5, step=5
+        label="Fig Track Height(cm)",
+        min_value=5,
+        max_value=100,
+        value=5,
+        step=5,
     )
     label_angle = slider_cols[0].slider(
-        label="Label Angle", min_value=0, max_value=90, value=30, step=15
+        label="Label Angle",
+        min_value=0,
+        max_value=90,
+        value=30,
+        step=15,
     )
 
 
