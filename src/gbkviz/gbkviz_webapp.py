@@ -7,7 +7,7 @@ from streamlit.delta_generator import DeltaGenerator
 from gbkviz.genbank import read_upload_gbk_file
 from gbkviz.genome_diagram import cds_feature_list2fig
 
-st.title("GBKviz: Genbank Data Visualization")
+st.header("GBKviz: Genbank Data Visualization Tool")
 
 ###########################################################
 # Sidebar Parameters Widgets
@@ -16,7 +16,7 @@ with st.sidebar:
 
     # Genbank files upload widgets
     upload_file_list = st.file_uploader(
-        label="Upload your genbank Files (*.gb|*.gbk)",
+        label="Upload your genbank files (*.gb|*.gbk)",
         type=["gb", "gbk"],
         accept_multiple_files=True,
     )
@@ -33,17 +33,23 @@ with st.sidebar:
     color_cols = st.columns(4)
     cds_color = color_cols[0].color_picker(label="CDS", value="#FFA500")
     gene_color = color_cols[1].color_picker(label="gene", value="#0FE8E4")
-    trna_color = color_cols[2].color_picker(label="tRNA", value="#E8630F")
+    trna_color = color_cols[2].color_picker(label="tRNA", value="#E80F0F")
     misc_color = color_cols[3].color_picker(label="misc", value="#E80FC6")
+    feature2color = {
+        "CDS": cds_color,
+        "gene": gene_color,
+        "tRNA": trna_color,
+        "misc_feature": misc_color,
+    }
 
     #
     label_type = st.selectbox(
-        label="Label Type",
+        label="Features Label",
         options=["gene", "protein_id", "locus_tag", "product"],
         index=0,
     )
     symbol = st.selectbox(
-        label="Symbol",
+        label="Features Symbol",
         options=["BIGARROW", "BOX", "ARROW", "OCTO", "JAGGY"],
         index=0,
     )
@@ -85,13 +91,12 @@ with st.sidebar:
 if upload_file_list:
 
     gbk_info_list = []
+    gbk_info_placeholder = st.empty()
+    image_placeholder = st.empty()
 
     with st.form(key="form"):
 
         st.form_submit_button(label="Update Figure")
-
-        # col1: DeltaGenerator
-        # col2: DeltaGenerator
         input_cols: List[DeltaGenerator]
         input_cols = st.columns(2)
 
@@ -103,30 +108,34 @@ if upload_file_list:
 
             gbk_name = Path(gbk.name).stem
 
+            # Min-Max range input widget
+            range_label = f"{gbk_name} Min-Max Range (Max={max_length:,} bp)"
             min_value = input_cols[0].number_input(
-                f"{gbk_name} Min-Max Range (Max={max_length:,} bp)",
-                0,
-                max_length,
-                0,
-                1000,
+                label=range_label,
+                min_value=0,
+                max_value=max_length,
+                value=0,
+                step=1000,
             )
             max_value = input_cols[1].number_input(
-                "",
-                0,
-                max_length,
-                10000,
-                1000,
+                label="",
+                min_value=0,
+                max_value=max_length,
+                value=10000,
+                step=1000,
             )
-            gbk_info_list.append(f"{gbk_name}, min={min_value}, max={max_value}")
+            gbk_info_list.append(f"{gbk_name} ({min_value:,} - {max_value:,} bp)")
 
-    for gbk_info in gbk_info_list:
-        st.write(gbk_info)
+    all_gbk_info = ""
+    for cnt, gbk_info in enumerate(gbk_info_list, 1):
+        all_gbk_info += f"Track{cnt:02d}: {gbk_info}  \n"
+    gbk_info_placeholder.markdown(all_gbk_info)
 
     fig_bytes = cds_feature_list2fig(
         cds_feature_list=cds_feature_list,
         start_pos=int(min_value),
         end_pos=int(max_value),
-        color=cds_color,
+        feature2color=feature2color,
         fig_width=fig_width,
         fig_track_height=fig_track_height,
         show_label=show_label,
@@ -137,4 +146,4 @@ if upload_file_list:
         label_angle=label_angle,
     )
 
-    st.image(fig_bytes, use_column_width="never")
+    image_placeholder.image(fig_bytes, use_column_width="never")

@@ -1,4 +1,4 @@
-from typing import List
+from typing import Dict, List
 
 from Bio.Graphics import GenomeDiagram
 from Bio.Graphics.GenomeDiagram import FeatureSet
@@ -11,7 +11,7 @@ def cds_feature_list2fig(
     cds_feature_list: List[SeqFeature],
     start_pos: int,
     end_pos: int,
-    color: str,
+    feature2color: Dict[str, str],
     fig_width: int,
     fig_track_height: int,
     show_label: bool,
@@ -52,6 +52,7 @@ def cds_feature_list2fig(
         qualifiers = cds_feature.qualifiers
         if label_type in ("gene", "protein_id", "locus_tag", "product"):
             label_name = qualifiers.get(label_type, [""])[0]
+            color = feature2color[cds_feature.type]
         else:
             raise ValueError(f"Invalid label type `{label_type}` detected!!")
 
@@ -87,7 +88,3 @@ def cds_feature_list2fig(
     )
 
     return gd.write_to_string(output="jpg")
-
-    # plot_file = Path("test.jpg")
-    # file_ext = plot_file.suffix.replace(".", "")
-    # gd.write(plot_file, file_ext)
