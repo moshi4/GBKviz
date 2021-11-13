@@ -5,30 +5,32 @@ import streamlit as st
 from streamlit.delta_generator import DeltaGenerator
 
 from gbkviz.genbank import Genbank, read_upload_gbk_file
-from gbkviz.genome_diagram import cds_feature_list2fig
-
-st.header("GBKviz: Genbank Data Visualization Tool")
+from gbkviz.genome_diagram import gbk2fig
 
 ###########################################################
 # Sidebar Parameters Widgets
 ###########################################################
 with st.sidebar:
 
+    # GitHub hyperlink
+    hyperlink = "[GBKviz(GitHub)](https://github.com/moshi4/GBKviz/)"
+    st.markdown(hyperlink)
+
     # Genbank files upload widgets
-    upload_file_list = st.file_uploader(
+    upload_files = st.file_uploader(
         label="Upload your genbank files (*.gb|*.gbk)",
         type=["gb", "gbk"],
         accept_multiple_files=True,
     )
 
-    # Features select option
+    # Target features select option
     target_features = st.multiselect(
-        label="Feature Selection",
+        label="Target Feature Selection",
         options=["CDS", "gene", "tRNA", "misc_feature"],
         default=["CDS"],
     )
 
-    # Colorpicker widgets
+    # Features colorpicker
     color_cols: List[DeltaGenerator]
     color_cols = st.columns(4)
     cds_color = color_cols[0].color_picker(label="CDS", value="#FFA500")
@@ -59,8 +61,8 @@ with st.sidebar:
     check_cols = List[DeltaGenerator]
     check_cols = st.columns(3)
     show_label = check_cols[0].checkbox("Label", True)
-    show_ticks = check_cols[1].checkbox("Ticks", True)
-    show_scale = check_cols[2].checkbox("Scale", True)
+    show_scale = check_cols[1].checkbox("Scale", True)
+    show_ticks = check_cols[2].checkbox("ScaleTicks", True)
 
     slider_cols = List[DeltaGenerator]
     slider_cols = st.columns(2)
@@ -73,10 +75,10 @@ with st.sidebar:
     )
     fig_track_height = slider_cols[1].slider(
         label="Fig Track Height(cm)",
-        min_value=5,
-        max_value=100,
-        value=5,
-        step=5,
+        min_value=1,
+        max_value=20,
+        value=3,
+        step=1,
     )
     label_angle = slider_cols[0].slider(
         label="Label Angle",
@@ -90,14 +92,17 @@ with st.sidebar:
 ###########################################################
 # Main Screen Widgets
 ###########################################################
-if upload_file_list:
+st.header("GBKviz: Genbank Data Visualization Tool")
+
+if upload_files:
 
     gbk_list: List[Genbank] = []
     min_value_list: List[int] = []
     max_value_list: List[int] = []
     gbk_info_list = []
+
     gbk_info_placeholder = st.empty()
-    image_placeholder = st.empty()
+    fig_placeholder = st.empty()
 
     with st.form(key="form"):
 
@@ -105,7 +110,7 @@ if upload_file_list:
         input_cols: List[DeltaGenerator]
         input_cols = st.columns(2)
 
-        for upload_gbk_file in upload_file_list:
+        for upload_gbk_file in upload_files:
             gbk = read_upload_gbk_file(upload_gbk_file)
             gbk_list.append(gbk)
             max_length = gbk.max_length
@@ -133,12 +138,14 @@ if upload_file_list:
             min_value_list.append(int(min_value))
             max_value_list.append(int(max_value))
 
+    # Uploaded genbank file information
     all_gbk_info = ""
     for cnt, gbk_info in enumerate(gbk_info_list, 1):
         all_gbk_info += f"Track{cnt:02d}: {gbk_info}  \n"
     gbk_info_placeholder.markdown(all_gbk_info)
 
-    fig_bytes = cds_feature_list2fig(
+    # Display genbank visualization figure
+    fig_bytes = gbk2fig(
         gbk_list=gbk_list,
         start_pos_list=min_value_list,
         end_pos_list=max_value_list,
@@ -153,5 +160,4 @@ if upload_file_list:
         label_angle=label_angle,
         target_features=target_features,
     )
-
-    image_placeholder.image(fig_bytes, use_column_width="never")
+    fig_placeholder.image(fig_bytes, use_column_width="never")

@@ -28,16 +28,17 @@ class Genbank:
         return len(self._record.seq)
 
     def extract_features(self, target_features: List[str]) -> List[SeqFeature]:
-        """Extract CDS features
+        """Extract target features
 
         Returns:
-            List[SeqFeature]: CDS feature list
+            List[SeqFeature]: Extract feature list
+
+        Note:
+             Target features: "CDS", "gene", "tRNA", "misc_feature"
         """
-        cds_feature_list: List[SeqFeature] = []
-        cds_feature_list = [
-            f for f in self._record.features if f.type in target_features
-        ]
-        return cds_feature_list
+        feature_list: List[SeqFeature] = []
+        feature_list = [f for f in self._record.features if f.type in target_features]
+        return feature_list
 
 
 @st.cache(allow_output_mutation=True)

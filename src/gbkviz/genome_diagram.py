@@ -2,13 +2,14 @@ from typing import Dict, List
 
 from Bio.Graphics import GenomeDiagram
 from Bio.Graphics.GenomeDiagram import FeatureSet
+from Bio.SeqFeature import CompoundLocation, FeatureLocation, SeqFeature
 from reportlab.lib import colors
 from reportlab.lib.units import cm
 
 from gbkviz.genbank import Genbank
 
 
-def cds_feature_list2fig(
+def gbk2fig(
     gbk_list: List[Genbank],
     start_pos_list: List[int],
     end_pos_list: List[int],
@@ -27,20 +28,18 @@ def cds_feature_list2fig(
     gd = GenomeDiagram.Diagram("Genbank Genome Diagram")
 
     print("####################")
-    for track_cnt, (gbk, start_pos, end_pos) in enumerate(
-        zip(gbk_list, start_pos_list, end_pos_list), 1
-    ):
+    for gbk, start_pos, end_pos in zip(gbk_list, start_pos_list, end_pos_list):
         print(gbk.name, start_pos, end_pos)
-        track_cnt = len(gbk_list) - 1
 
         gd_feature_set: FeatureSet = gd.new_track(
-            track_level=track_cnt,
+            # track_level=track_cnt,
+            track_level=0,
             name=gbk.name,
             greytrack=False,
             greytrack_labels=0,
             greytrack_fontcolor=colors.black,
-            start=start_pos,
-            end=end_pos,
+            start=0,
+            end=end_pos - start_pos,
             # Scale & Scale Ticks property
             scale=show_scale,
             scale_fontsize=8,
@@ -57,20 +56,34 @@ def cds_feature_list2fig(
             axis_label=True,
         ).new_set()
 
-        for cds_feature in gbk.extract_features(target_features):
-            qualifiers = cds_feature.qualifiers
+        for feature in gbk.extract_features(target_features):
+            # print(cds_feature.location)
+            loc = feature.location
+            start = loc.start - start_pos
+            end = loc.end - start_pos
+            strand = feature.strand
+            feature = SeqFeature(
+                location=FeatureLocation(start, end, strand),
+                type=feature.type,
+                qualifiers=feature.qualifiers,
+            )
+            # print(cds_feature.location)
+
+            # cds_feature.location._start -= start_pos
+            # cds_feature.location._end -= start_pos
+            qualifiers = feature.qualifiers
             if label_type in ("gene", "protein_id", "locus_tag", "product"):
                 label_name = qualifiers.get(label_type, [""])[0]
-                color = feature2color[cds_feature.type]
+                color = feature2color[feature.type]
             else:
                 raise ValueError(f"Invalid label type `{label_type}` detected!!")
 
             strand_label_angle = (
-                label_angle if cds_feature.strand == 1 else 180 - label_angle
+                label_angle if feature.strand == 1 else 180 - label_angle
             )
 
             gd_feature_set.add_feature(
-                cds_feature,
+                feature,
                 color=color,
                 name=label_name,
                 label=show_label,
@@ -82,18 +95,21 @@ def cds_feature_list2fig(
                 arrowshaft_height=0.3,
             )
 
-    one_track_size = (fig_width * cm, fig_track_height * len(gbk_list) * cm)
+    size_list = [e - s for s, e in zip(start_pos_list, end_pos_list)]
 
+    pagesize = (fig_width * cm, fig_track_height * len(gbk_list) * cm)
     gd.draw(
         format="linear",
         orientation="landscape",
-        pagesize=one_track_size,  # X, Y
+        # pagesize="A4",
+        pagesize=pagesize,  # X, Y
+        # pagesize=(30 * cm, 30 * cm),  # X, Y
         fragments=1,
-        start=min(start_pos_list),
-        end=max(end_pos_list),
+        start=0,
+        end=max(size_list),
         tracklines=False,
         # track_size=0.05,
-        track_size=0.3,
+        track_size=0.5,
     )
 
     return gd.write_to_string(output="jpg")
