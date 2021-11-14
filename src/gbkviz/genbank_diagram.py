@@ -1,4 +1,5 @@
-from typing import Dict, List
+from io import StringIO
+from typing import Dict, List, Tuple, Union
 
 from Bio.Graphics import GenomeDiagram
 from Bio.Graphics.GenomeDiagram import FeatureSet
@@ -27,7 +28,8 @@ def gbk2fig(
     fig_track_size: float,
     label_fsize: int,
     scaleticks_fsize: int,
-) -> bytes:
+    fig_format: str,
+) -> Tuple[bytes, Union[str, bytes]]:
 
     gd = GenomeDiagram.Diagram("Genbank Genome Diagram")
 
@@ -36,7 +38,7 @@ def gbk2fig(
         gd_feature_set: FeatureSet = gd.new_track(
             track_level=0,
             name=gbk.name,
-            greytrack=False,
+            greytrack=False,  # Disable greytrack
             greytrack_labels=0,
             greytrack_fontcolor=colors.black,
             start=0,
@@ -79,7 +81,7 @@ def gbk2fig(
             )
 
             gd_feature_set.add_feature(
-                feature,
+                feature=feature,
                 color=color,
                 name=label_name,
                 label=show_label,
@@ -93,11 +95,10 @@ def gbk2fig(
 
     size_list = [e - s for s, e in zip(start_pos_list, end_pos_list)]
 
-    pagesize = (fig_width * cm, fig_track_height * len(gbk_list) * cm)
     gd.draw(
         format="linear",
         orientation="landscape",
-        pagesize=pagesize,  # X, Y
+        pagesize=(fig_width * cm, fig_track_height * len(gbk_list) * cm),  # X, Y
         fragments=1,
         start=0,
         end=max(size_list),
@@ -105,4 +106,12 @@ def gbk2fig(
         track_size=fig_track_size,
     )
 
-    return gd.write_to_string(output="jpg")
+    jpg_bytes = gd.write_to_string(output="jpg")
+    if fig_format == "svg":
+        # format_bytes = gd.write_to_string(output="SVG")
+        handle = StringIO()
+        gd.write(handle, fig_format)
+        return jpg_bytes, handle.getvalue()
+    else:
+        format_bytes = gd.write_to_string(output=fig_format)
+        return jpg_bytes, format_bytes

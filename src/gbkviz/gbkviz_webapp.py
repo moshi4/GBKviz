@@ -24,6 +24,14 @@ with st.sidebar:
     )
 
     if upload_files:
+        # Download format selectbox widgets
+        fig_format = st.selectbox(
+            label="Download Figure Format (JPG/PNG/SVG/PDF)",
+            options=["JPG", "PNG", "SVG", "PDF"],
+            index=0,
+        )
+        fig_format = str(fig_format).lower()
+
         # Visibility control checkbox widgets
         check_cols = List[DeltaGenerator]
         check_cols = st.columns(3)
@@ -32,20 +40,20 @@ with st.sidebar:
         show_ticks = check_cols[2].checkbox("ScaleTicks", True)
 
         # Figure appearence control widgets
-        selectbox_cols: List[DeltaGenerator]
-        selectbox_cols = st.columns(2)
-        label_type = selectbox_cols[0].selectbox(
+        fig_appearence_cols: List[DeltaGenerator]
+        fig_appearence_cols = st.columns(2)
+        label_type = fig_appearence_cols[0].selectbox(
             label="Feature Label Type",
             options=["gene", "protein_id", "locus_tag", "product"],
             index=0,
         )
-        symbol = selectbox_cols[1].selectbox(
+        symbol = fig_appearence_cols[1].selectbox(
             label="Feature Symbol",
             options=["BIGARROW", "BOX", "ARROW", "OCTO", "JAGGY"],
             index=0,
         )
 
-        label_angle_str = selectbox_cols[0].selectbox(
+        label_angle_str = fig_appearence_cols[0].selectbox(
             label="Label Angle",
             options=["0", "15", "30", "45", "60", "75", "90"],
             index=2,
@@ -59,21 +67,21 @@ with st.sidebar:
             "100Kbp": 100000,
             "1Mbp": 1000000,
         }
-        scaleticks_sint = selectbox_cols[1].selectbox(
+        scaleticks_sint = fig_appearence_cols[1].selectbox(
             label="ScaleTicks Interval",
             options=list(sint2int.keys()),
             index=1,
         )
         scaleticks_interval = sint2int[scaleticks_sint]
 
-        label_fsize = selectbox_cols[0].number_input(
+        label_fsize = fig_appearence_cols[0].number_input(
             label="Label Font Size",
             min_value=0,
             max_value=100,
             value=10,
             step=1,
         )
-        scaleticks_fsize = selectbox_cols[1].number_input(
+        scaleticks_fsize = fig_appearence_cols[1].number_input(
             label="ScaleTicks Font Size",
             min_value=0,
             max_value=100,
@@ -141,6 +149,7 @@ if upload_files:
     gbk_info_list: List[str] = []
 
     gbk_info_placeholder = st.empty()
+    download_btn_placeholder = st.empty()
     fig_placeholder = st.empty()
 
     with st.form(key="form"):
@@ -186,7 +195,7 @@ if upload_files:
     gbk_info_placeholder.markdown(all_gbk_info)
 
     # Display genbank visualization figure
-    fig_bytes = gbk2fig(
+    jpg_bytes, format_bytes = gbk2fig(
         gbk_list=gbk_list,
         start_pos_list=min_value_list,
         end_pos_list=max_value_list,
@@ -204,5 +213,12 @@ if upload_files:
         fig_track_size=fig_track_size,
         label_fsize=label_fsize,
         scaleticks_fsize=scaleticks_fsize,
+        fig_format=fig_format,
     )
-    fig_placeholder.image(fig_bytes, use_column_width="never")
+    fig_placeholder.image(jpg_bytes, use_column_width="never")
+
+    download_btn_placeholder.download_button(
+        label=f"Download Figure ({fig_format.upper()} Format)",
+        data=format_bytes,
+        file_name=f"gbkviz_figure.{fig_format}",
+    )
