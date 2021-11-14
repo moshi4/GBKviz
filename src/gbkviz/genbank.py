@@ -23,12 +23,15 @@ class Genbank:
         self._record: SeqRecord = list(SeqIO.parse(self.gbk_file, "genbank"))[0]
 
     @property
-    def max_length(self):
+    def max_length(self) -> int:
         """Max genome sequence length"""
         return len(self._record.seq)
 
     def extract_features(self, target_features: List[str]) -> List[SeqFeature]:
         """Extract target features
+
+        Args:
+            target_features (List[str]): Target features type to extract
 
         Returns:
             List[SeqFeature]: Extract feature list
@@ -36,14 +39,20 @@ class Genbank:
         Note:
              Target features: "CDS", "gene", "tRNA", "misc_feature"
         """
-        feature_list: List[SeqFeature] = []
-        feature_list = [f for f in self._record.features if f.type in target_features]
-        return feature_list
+        return [f for f in self._record.features if f.type in target_features]
 
+    @staticmethod
+    @st.cache(allow_output_mutation=True)
+    def read_upload_gbk_file(upload_gbk_file: UploadedFile) -> Genbank:
+        """Read uploaded genbank file from Streamlit app
 
-@st.cache(allow_output_mutation=True)
-def read_upload_gbk_file(upload_gbk_file: UploadedFile) -> Genbank:
-    return Genbank(
-        gbk_file=StringIO(upload_gbk_file.getvalue().decode("utf-8")),
-        name=upload_gbk_file.name,
-    )
+        Args:
+            upload_gbk_file (UploadedFile): Uploaded genbank file
+
+        Returns:
+            Genbank: Genbank class object
+        """
+        return Genbank(
+            gbk_file=StringIO(upload_gbk_file.getvalue().decode("utf-8")),
+            name=upload_gbk_file.name,
+        )
