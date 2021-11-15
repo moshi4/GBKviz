@@ -1,16 +1,17 @@
 import os
-import tempfile
 from pathlib import Path
 from typing import List
 
 import streamlit as st
 from streamlit.delta_generator import DeltaGenerator
 
+from gbkviz.align_coord import AlignCoord
 from gbkviz.draw_param import DrawParam
 from gbkviz.genbank import Genbank
 from gbkviz.genbank_diagram import gbk2fig
-from gbkviz.genome_align import AlignCoord, GenomeAlign
+from gbkviz.genome_align import GenomeAlign
 
+# Page basic configuration
 st.set_page_config(
     page_title="GBKviz: Genbank Data Visualization Tool",
     layout="centered",
@@ -255,8 +256,8 @@ if upload_files:
         target_features=target_features,
         scaleticks_interval=scaleticks_interval,
         fig_track_size=fig_track_size,
-        label_fsize=label_fsize,
-        scaleticks_fsize=scaleticks_fsize,
+        label_fsize=int(label_fsize),
+        scaleticks_fsize=int(scaleticks_fsize),
         fig_format=fig_format,
     )
     fig_placeholder.image(jpg_bytes, use_column_width="never")
