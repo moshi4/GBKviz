@@ -21,7 +21,7 @@ def gbk2fig(
     show_ticks: bool,
     show_scale: bool,
     label_type: str,
-    symbol: str,
+    feature_symbol: str,
     label_angle: int,
     target_features: List[str],
     scaleticks_interval: int,
@@ -88,7 +88,7 @@ def gbk2fig(
                 label_size=label_fsize,
                 label_angle=strand_label_angle,
                 label_position="middle",  # "start", "middle", "end"
-                sigil=symbol,  # "BOX", "ARROW", "OCTO", "JAGGY", "BIGARROW"
+                sigil=feature_symbol,  # "BOX", "ARROW", "OCTO", "JAGGY", "BIGARROW"
                 arrowhead_length=0.5,  # Default: 0.5
                 arrowshaft_height=0.3,
             )

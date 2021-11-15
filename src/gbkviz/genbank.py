@@ -41,6 +41,16 @@ class Genbank:
         """
         return [f for f in self._record.features if f.type in target_features]
 
+    def write_genome_fasta(self, outfile: Union[str, Path]) -> None:
+        """Write genome fasta file
+
+        Args:
+            outfile (Union[str, Path]): Output genome fasta file
+        """
+        genome_fasta_str = f">{self.name}\n{self._record.seq}\n"
+        with open(outfile, "w") as f:
+            f.write(genome_fasta_str)
+
     @staticmethod
     @st.cache(allow_output_mutation=True)
     def read_upload_gbk_file(upload_gbk_file: UploadedFile) -> Genbank:
@@ -54,5 +64,5 @@ class Genbank:
         """
         return Genbank(
             gbk_file=StringIO(upload_gbk_file.getvalue().decode("utf-8")),
-            name=upload_gbk_file.name,
+            name=Path(upload_gbk_file.name).stem,
         )
