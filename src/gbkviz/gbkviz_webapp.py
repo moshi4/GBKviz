@@ -32,12 +32,14 @@ st.header("GBKviz: Genbank Data Visualization Tool")
 repo_hyperlink = "[GBKviz (GitHub)](https://github.com/moshi4/GBKviz/)"
 st.sidebar.markdown(repo_hyperlink)
 
-# Genbank files upload widgets
-upload_files = st.sidebar.file_uploader(
-    label="Upload your genbank files (*.gb|*.gbk)",
-    type=["gb", "gbk"],
-    accept_multiple_files=True,
-)
+with st.sidebar.expander(label="Toggle Genbank Upload Box", expanded=True):
+
+    # Genbank files upload widgets
+    upload_files = st.file_uploader(
+        label="Upload your genbank files (*.gb|*.gbk)",
+        type=["gb", "gbk"],
+        accept_multiple_files=True,
+    )
 
 if upload_files:
     # Download format selectbox widgets
@@ -153,6 +155,8 @@ if upload_files:
     }
 
     genome_comparison = None
+    cross_link_color = ""
+    inverted_cross_link_color = ""
     if len(upload_files) >= 2 and GenomeAlign.check_requirements():
         # Genome comparison type selectbox widget
         genome_comparison = st.sidebar.selectbox(
@@ -165,6 +169,17 @@ if upload_files:
                 "Protein Many-to-Many",
             ],
             index=0,
+            help="Nucleotide One-to-One:  \nnucmer alingment one-to-one mapping",
+        )
+
+        # Genome comparison colorpicker widgets
+        cross_link_color_cols: List[DeltaGenerator]
+        cross_link_color_cols = st.sidebar.columns(2)
+        cross_link_color = cross_link_color_cols[0].color_picker(
+            label="Cross Link (Normal)", value="#E80F13"
+        )
+        inverted_cross_link_color = cross_link_color_cols[1].color_picker(
+            label="Cross Link (Inverted)", value="#0F0FE8"
         )
 
     ###########################################################
@@ -182,8 +197,8 @@ if upload_files:
     with st.form(key="form"):
 
         st.form_submit_button(label="Update Figure")
-        input_cols: List[DeltaGenerator]
-        input_cols = st.columns(2)
+        range_cols: List[DeltaGenerator]
+        range_cols = st.columns(2)
 
         for upload_gbk_file in upload_files:
             gbk = Genbank.read_upload_gbk_file(upload_gbk_file)
@@ -192,15 +207,15 @@ if upload_files:
 
             # Min-Max range input widget
             range_label = f"{gbk.name} Min-Max Range (Max={max_length:,} bp)"
-            default_max_value = max_length if max_length <= 50000 else 50000
-            min_value = input_cols[0].number_input(
+            min_value = range_cols[0].number_input(
                 label=range_label,
                 min_value=0,
                 max_value=max_length,
                 value=0,
                 step=1000,
             )
-            max_value = input_cols[1].number_input(
+            default_max_value = max_length if max_length <= 50000 else 50000
+            max_value = range_cols[1].number_input(
                 label="",
                 min_value=0,
                 max_value=max_length,
@@ -215,7 +230,7 @@ if upload_files:
             max_value_list.append(int(max_value))
 
     # Genome comparison
-    align_coords_list: List[AlignCoord] = []
+    align_coords: List[AlignCoord] = []
     if genome_comparison is not None:
         genome_fasta_files: List[Path] = []
         gbkviz_tmpdir = Path("tmp_gbkviz")
@@ -229,9 +244,9 @@ if upload_files:
             genome_fasta_files.append(genome_fasta_file)
         seqtype, maptype = genome_comparison.split(" ")
         genome_align = GenomeAlign(genome_fasta_files, seqtype, maptype)
-        align_coords_list = genome_align.run()
-        print(gbkviz_tmpdir)
-        print(align_coords_list)
+        align_coords = genome_align.run()
+        # print(gbkviz_tmpdir)
+        # print(align_coords)
 
     # Uploaded genbank file information
     all_gbk_info = ""
@@ -259,6 +274,9 @@ if upload_files:
         label_fsize=int(label_fsize),
         scaleticks_fsize=int(scaleticks_fsize),
         fig_format=fig_format,
+        align_coords=align_coords,
+        cross_link_color=cross_link_color,
+        inverted_cross_link_color=inverted_cross_link_color,
     )
     fig_placeholder.image(jpg_bytes, use_column_width="never")
 

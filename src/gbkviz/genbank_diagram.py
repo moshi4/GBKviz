@@ -2,11 +2,12 @@ from io import StringIO
 from typing import Dict, List, Tuple, Union
 
 from Bio.Graphics import GenomeDiagram
-from Bio.Graphics.GenomeDiagram import FeatureSet
+from Bio.Graphics.GenomeDiagram import FeatureSet, Track
 from Bio.SeqFeature import FeatureLocation, SeqFeature
 from reportlab.lib import colors
 from reportlab.lib.units import cm
 
+from gbkviz.align_coord import AlignCoord
 from gbkviz.genbank import Genbank
 
 
@@ -29,6 +30,9 @@ def gbk2fig(
     label_fsize: int,
     scaleticks_fsize: int,
     fig_format: str,
+    align_coords: List[AlignCoord],
+    cross_link_color: str,
+    inverted_cross_link_color: str,
 ) -> Tuple[bytes, Union[str, bytes]]:
 
     gd = GenomeDiagram.Diagram("Genbank Genome Diagram")
@@ -95,6 +99,21 @@ def gbk2fig(
 
     size_list = [e - s for s, e in zip(start_pos_list, end_pos_list)]
 
+    name2track: Dict[str, Track] = {}
+    for track in gd.get_tracks():
+        name2track[track.name] = track
+
+    cross_links = []
+    for align_coord in align_coords:
+        # TODO: Set appropriate minus_bp value
+        cross_link = align_coord.get_cross_link(
+            name2track=name2track,
+            minus_bp=0,
+            normal_color=cross_link_color,
+            inverted_color=inverted_cross_link_color,
+        )
+        cross_links.append(cross_link)
+
     gd.draw(
         format="linear",
         orientation="landscape",
@@ -104,11 +123,11 @@ def gbk2fig(
         end=max(size_list),
         tracklines=False,
         track_size=fig_track_size,
+        cross_track_links=cross_links,
     )
 
     jpg_bytes = gd.write_to_string(output="jpg")
     if fig_format == "svg":
-        # format_bytes = gd.write_to_string(output="SVG")
         handle = StringIO()
         gd.write(handle, fig_format)
         return jpg_bytes, handle.getvalue()

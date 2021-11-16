@@ -28,7 +28,7 @@ class GenomeAlign:
         """Run MUMmer genome alignment
 
         Returns:
-            List[AlignCoords]: Genome alignment coordinates list
+            List[AlignCoords]: Genome alignment coordinates
         """
         align_coords: List[AlignCoord] = []
         for idx in range(0, self.genome_num - 1):
@@ -36,23 +36,23 @@ class GenomeAlign:
             fa_file2 = self.genome_fasta_files[idx + 1]
             outdir = Path(fa_file1).parent
 
-            # Run nucmer or promer
+            # Run genome alignment using nucmer or promer
             prefix = outdir / f"out{idx}"
             delta_file = prefix.with_suffix(".delta")
-            cmd = f"{self.align_bin} {fa_file1} {fa_file2} --prefix={prefix}"
+            cmd = f"{self._align_bin} {fa_file1} {fa_file2} --prefix={prefix}"
             sp.run(cmd, shell=True)
 
-            # Run delta-filter
+            # Run delta-filter to map 'one-to-one' or 'many-to-many' relation
             filter_delta_file = outdir / f"filter_out{idx}.delta"
-            cmd = f"delta-filter {self.filter_opt} {delta_file} > {filter_delta_file}"
+            cmd = f"delta-filter {self._map_opt} {delta_file} > {filter_delta_file}"
             sp.run(cmd, shell=True)
 
-            # Run show-coords
+            # Run show-coords to extract alingment coords
             coords_file = outdir / f"coords{idx}.tsv"
             cmd = f"show-coords -H -T {filter_delta_file} > {coords_file}"
             sp.run(cmd, shell=True)
 
-            align_coords.extend(AlignCoord.read(coords_file, self.seqtype))
+            align_coords.extend(AlignCoord.parse(coords_file, self.seqtype))
 
         return align_coords
 
@@ -62,8 +62,8 @@ class GenomeAlign:
         return len(self.genome_fasta_files)
 
     @property
-    def align_bin(self) -> str:
-        """Get genome alignment binary name"""
+    def _align_bin(self) -> str:
+        """Get genome alignment program name ('nucmer' or 'promer')"""
         if self.seqtype == "nucleotide":
             return "nucmer"
         elif self.seqtype == "protein":
@@ -72,8 +72,8 @@ class GenomeAlign:
             raise ValueError(f"Invalid seqtype '{self.seqtype}'")
 
     @property
-    def filter_opt(self) -> str:
-        """Get filter option"""
+    def _map_opt(self) -> str:
+        """Get filter mapping option ('one-to-one' or 'many-to-many')"""
         if self.maptype == "one-to-one":
             return "-1"
         elif self.maptype == "many-to-many":
@@ -83,7 +83,7 @@ class GenomeAlign:
 
     @staticmethod
     def check_requirements() -> bool:
-        """Check requirements to run genome align
+        """Check requirements to run MUMmer genome alignment
 
         Returns:
             bool: Check result
