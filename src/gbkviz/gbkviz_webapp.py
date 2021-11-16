@@ -4,9 +4,9 @@ from typing import List
 
 import streamlit as st
 from streamlit.delta_generator import DeltaGenerator
+from streamlit.uploaded_file_manager import UploadedFile
 
 from gbkviz.align_coord import AlignCoord
-from gbkviz.draw_param import DrawParam
 from gbkviz.genbank import Genbank
 from gbkviz.genbank_diagram import gbk2fig
 from gbkviz.genome_align import GenomeAlign
@@ -35,6 +35,7 @@ st.sidebar.markdown(repo_hyperlink)
 with st.sidebar.expander(label="Toggle Genbank Upload Box", expanded=True):
 
     # Genbank files upload widgets
+    upload_files: List[UploadedFile]
     upload_files = st.file_uploader(
         label="Upload your genbank files (*.gb|*.gbk)",
         type=["gb", "gbk"],
@@ -154,13 +155,20 @@ if upload_files:
         "misc_feature": misc_color,
     }
 
+    # Reverse target multiselect widget
+    reverse_target_names = st.sidebar.multiselect(
+        label="Reverse Genome",
+        options=[Path(f.name).stem for f in upload_files],
+        default=[],
+    )
+
     genome_comparison = None
     cross_link_color = ""
     inverted_cross_link_color = ""
     if len(upload_files) >= 2 and GenomeAlign.check_requirements():
         # Genome comparison type selectbox widget
         genome_comparison = st.sidebar.selectbox(
-            label="Comparison Type",
+            label="Genome Comparison Type",
             options=[
                 None,
                 "Nucleotide One-to-One",
@@ -169,17 +177,16 @@ if upload_files:
                 "Protein Many-to-Many",
             ],
             index=0,
-            help="Nucleotide One-to-One:  \nnucmer alingment one-to-one mapping",
         )
 
         # Genome comparison colorpicker widgets
         cross_link_color_cols: List[DeltaGenerator]
         cross_link_color_cols = st.sidebar.columns(2)
         cross_link_color = cross_link_color_cols[0].color_picker(
-            label="Cross Link (Normal)", value="#E80F13"
+            label="Cross Link (Normal)", value="#0000FF"
         )
         inverted_cross_link_color = cross_link_color_cols[1].color_picker(
-            label="Cross Link (Inverted)", value="#0F0FE8"
+            label="Cross Link (Inverted)", value="#FF0000"
         )
 
     ###########################################################
@@ -191,37 +198,43 @@ if upload_files:
     gbk_info_list: List[str] = []
 
     gbk_info_placeholder = st.empty()
-    download_btn_placeholder = st.empty()
+    dl_btn_cols = st.columns(2)
+    dl_fig_btn_placeholder = dl_btn_cols[0].empty()
+    dl_align_coords_btn_placeholder = dl_btn_cols[1].empty()
     fig_placeholder = st.empty()
 
     with st.form(key="form"):
 
         st.form_submit_button(label="Update Figure")
+
+        st.markdown("**Display Genome Min-Max Range Option**")
+
         range_cols: List[DeltaGenerator]
         range_cols = st.columns(2)
 
         for upload_gbk_file in upload_files:
             gbk = Genbank.read_upload_gbk_file(upload_gbk_file)
+            gbk.reverse = True if gbk.name in reverse_target_names else False
             gbk_list.append(gbk)
-            max_length = gbk.max_length
 
             # Min-Max range input widget
-            range_label = f"{gbk.name} Min-Max Range (Max={max_length:,} bp)"
+            range_label = f"{gbk.name} (Max={gbk.max_length:,} bp)"
             min_value = range_cols[0].number_input(
                 label=range_label,
                 min_value=0,
-                max_value=max_length,
+                max_value=gbk.max_length,
                 value=0,
                 step=1000,
             )
-            default_max_value = max_length if max_length <= 50000 else 50000
+            default_max_value = gbk.max_length if gbk.max_length <= 100000 else 100000
             max_value = range_cols[1].number_input(
                 label="",
                 min_value=0,
-                max_value=max_length,
+                max_value=gbk.max_length,
                 value=default_max_value,
                 step=1000,
             )
+
             length = int(max_value - min_value)
             gbk_info_list.append(
                 f"{gbk.name} ({min_value:,} - {max_value:,} bp), Length={length:,} bp"
@@ -233,20 +246,18 @@ if upload_files:
     align_coords: List[AlignCoord] = []
     if genome_comparison is not None:
         genome_fasta_files: List[Path] = []
-        gbkviz_tmpdir = Path("tmp_gbkviz")
+        gbkviz_tmpdir = Path("tmpwork_gbkviz")
         os.makedirs(gbkviz_tmpdir, exist_ok=True)
-        # with tempfile.TemporaryDirectory() as gbkviz_tmpdir:
         for gbk in gbk_list:
             # Make genome fasta file
-            genome_fasta_file = Path(gbkviz_tmpdir) / (gbk.name + ".fa")
+            suffix = "_reverse.fa" if gbk.reverse else ".fa"
+            genome_fasta_file = Path(gbkviz_tmpdir) / (gbk.name + suffix)
             if not genome_fasta_file.exists():
                 gbk.write_genome_fasta(genome_fasta_file)
             genome_fasta_files.append(genome_fasta_file)
         seqtype, maptype = genome_comparison.split(" ")
         genome_align = GenomeAlign(genome_fasta_files, seqtype, maptype)
         align_coords = genome_align.run()
-        # print(gbkviz_tmpdir)
-        # print(align_coords)
 
     # Uploaded genbank file information
     all_gbk_info = ""
@@ -254,7 +265,7 @@ if upload_files:
         all_gbk_info += f"Track{cnt:02d}: {gbk_info}  \n"
     gbk_info_placeholder.markdown(all_gbk_info)
 
-    # Display genbank visualization figure
+    # Create visualization and comparison figure
     jpg_bytes, format_bytes = gbk2fig(
         gbk_list=gbk_list,
         start_pos_list=min_value_list,
@@ -280,8 +291,21 @@ if upload_files:
     )
     fig_placeholder.image(jpg_bytes, use_column_width="never")
 
-    download_btn_placeholder.download_button(
+    # Download figure button widget
+    dl_fig_btn_placeholder.download_button(
         label=f"Download Figure ({fig_format.upper()} Format)",
         data=format_bytes,
         file_name=f"gbkviz_figure.{fig_format}",
     )
+
+    # Download align coords button widget
+    if align_coords:
+        header = (
+            "REF_START\tREF_END\tQUERY_START\tQUERY_END\tREF_LENGTH\t"
+            + "QUERY_LENGTH\tIDENTITY\tREF_NAME\tQUERY_NAME\n"
+        )
+        dl_align_coords_btn_placeholder.download_button(
+            label="Download Comparison Result (TSV Format)",
+            data=header + "\n".join([ac.as_tsv_format for ac in align_coords]),
+            file_name="gbkviz_comparison.tsv",
+        )

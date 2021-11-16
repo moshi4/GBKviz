@@ -35,10 +35,12 @@ def gbk2fig(
     inverted_cross_link_color: str,
 ) -> Tuple[bytes, Union[str, bytes]]:
 
+    # Create GenomeDiagram object
     gd = GenomeDiagram.Diagram("Genbank Genome Diagram")
 
     for gbk, start_pos, end_pos in zip(gbk_list, start_pos_list, end_pos_list):
 
+        # Add track of one genbank
         gd_feature_set: FeatureSet = gd.new_track(
             track_level=0,
             name=gbk.name,
@@ -84,6 +86,7 @@ def gbk2fig(
                 label_angle if feature.strand == 1 else 180 - label_angle
             )
 
+            # Add feature to genbank track
             gd_feature_set.add_feature(
                 feature=feature,
                 color=color,

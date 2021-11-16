@@ -40,17 +40,17 @@ class GenomeAlign:
             prefix = outdir / f"out{idx}"
             delta_file = prefix.with_suffix(".delta")
             cmd = f"{self._align_bin} {fa_file1} {fa_file2} --prefix={prefix}"
-            sp.run(cmd, shell=True)
+            _ = sp.run(cmd, shell=True, capture_output=True, text=True)
 
             # Run delta-filter to map 'one-to-one' or 'many-to-many' relation
             filter_delta_file = outdir / f"filter_out{idx}.delta"
             cmd = f"delta-filter {self._map_opt} {delta_file} > {filter_delta_file}"
-            sp.run(cmd, shell=True)
+            _ = sp.run(cmd, shell=True, capture_output=True, text=True)
 
             # Run show-coords to extract alingment coords
             coords_file = outdir / f"coords{idx}.tsv"
             cmd = f"show-coords -H -T {filter_delta_file} > {coords_file}"
-            sp.run(cmd, shell=True)
+            _ = sp.run(cmd, shell=True, capture_output=True, text=True)
 
             align_coords.extend(AlignCoord.parse(coords_file, self.seqtype))
 

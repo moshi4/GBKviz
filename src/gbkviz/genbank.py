@@ -18,6 +18,7 @@ class Genbank:
 
     gbk_file: Union[str, StringIO, Path]
     name: str = ""
+    reverse: bool = False
 
     def __post_init__(self):
         self._record: SeqRecord = list(SeqIO.parse(self.gbk_file, "genbank"))[0]
@@ -25,7 +26,15 @@ class Genbank:
     @property
     def max_length(self) -> int:
         """Max genome sequence length"""
-        return len(self._record.seq)
+        return len(self.record.seq)
+
+    @property
+    def record(self) -> SeqRecord:
+        """Genbank record"""
+        if self.reverse is True:
+            return self._record.reverse_complement()
+        else:
+            return self._record
 
     def extract_features(self, target_features: List[str]) -> List[SeqFeature]:
         """Extract target features
@@ -39,7 +48,7 @@ class Genbank:
         Note:
              Target features: "CDS", "gene", "tRNA", "misc_feature"
         """
-        return [f for f in self._record.features if f.type in target_features]
+        return [f for f in self.record.features if f.type in target_features]
 
     def write_genome_fasta(self, outfile: Union[str, Path]) -> None:
         """Write genome fasta file
@@ -47,7 +56,7 @@ class Genbank:
         Args:
             outfile (Union[str, Path]): Output genome fasta file
         """
-        genome_fasta_str = f">{self.name}\n{self._record.seq}\n"
+        genome_fasta_str = f">{self.name}\n{self.record.seq}\n"
         with open(outfile, "w") as f:
             f.write(genome_fasta_str)
 

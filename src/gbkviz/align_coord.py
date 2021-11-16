@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import csv
-from dataclasses import dataclass
+from dataclasses import astuple, dataclass
 from pathlib import Path
 from typing import Dict, List, Union
 
@@ -28,9 +28,20 @@ class AlignCoord:
         self,
         name2track: Dict[str, Track],
         minus_bp: int = 0,
-        normal_color: str = "#E80F13",  # Red
-        inverted_color: str = "#0F0FE8",  # Blue
+        normal_color: str = "#0000FF",  # Blue
+        inverted_color: str = "#FF0000",  # Red
     ) -> CrossLink:
+        """Get cross link object for genome comparison visualization
+
+        Args:
+            name2track (Dict[str, Track]): Name and Track dictionary
+            minus_bp (int, optional): Adjust minus bp value
+            normal_color (str, optional): Normal cross link hexcolor
+            inverted_color (str, optional): Inverted cross link hexcolor
+
+        Returns:
+            CrossLink: Cross link object
+        """
         # Change cross link bp
         ref_start = self.ref_start - minus_bp
         ref_end = self.ref_end - minus_bp
@@ -51,7 +62,6 @@ class AlignCoord:
             featureA=(name2track[self.ref_name], ref_start, ref_end),
             featureB=(name2track[self.query_name], query_start, query_end),
             color=gradient_cross_link_color,
-            # flip=flip,
         )
 
     @property
@@ -59,12 +69,25 @@ class AlignCoord:
         """Check inverted alignment coord or not"""
         return (self.ref_end - self.ref_start) * (self.query_end - self.query_start) < 0
 
+    @property
+    def as_tsv_format(self) -> str:
+        """TSV format text"""
+        return "\t".join([str(v) for v in astuple(self)])
+
     @staticmethod
     def parse(
         coords_tsv_file: Union[str, Path],
         seqtype: str,
     ) -> List[AlignCoord]:
-        """Parse MUMmer(nucmer|promer) output coords result file"""
+        """Parse MUMmer(nucmer|promer) output coords result file
+
+        Args:
+            coords_tsv_file (Union[str, Path]): MUMmer align coords file
+            seqtype (str): Sequence type ('nucleotide' or 'protein')
+
+        Returns:
+            List[AlignCoord]: Align coords
+        """
         align_coords = []
         with open(coords_tsv_file) as f:
             reader = csv.reader(f, delimiter="\t")
