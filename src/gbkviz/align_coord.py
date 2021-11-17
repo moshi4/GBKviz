@@ -97,10 +97,14 @@ class AlignCoord:
                 # Check read file contents & extract required row values
                 if seqtype == "nucleotide":
                     if len(row) != 9:
-                        raise ValueError("Invalid Mummer(nucmer) coords file!!")
+                        raise ValueError(
+                            f"Invalid nucmer coords file '{coords_tsv_file}'!!"
+                        )
                 elif seqtype == "protein":
                     if len(row) != 13:
-                        raise ValueError("Invalid Mummer(promer) coords file!!")
+                        raise ValueError(
+                            f"Invalid promer coords file '{coords_tsv_file}'!!"
+                        )
                     row = row[0:7] + row[11:13]
                 else:
                     raise ValueError(f"Invalid seqtype '{seqtype}'!!")
@@ -114,6 +118,7 @@ class AlignCoord:
                         typed_row.append(float(val))
                     else:
                         typed_row.append(str(val))
+
                 align_coords.append(AlignCoord(*typed_row))
 
         return align_coords
