@@ -256,7 +256,7 @@ if upload_files:
                 gbk.write_genome_fasta(genome_fasta_file)
             genome_fasta_files.append(genome_fasta_file)
         seqtype, maptype = genome_comparison.split(" ")
-        genome_align = GenomeAlign(genome_fasta_files, seqtype, maptype)
+        genome_align = GenomeAlign(genome_fasta_files, gbkviz_tmpdir, seqtype, maptype)
         align_coords = genome_align.run()
 
     # Uploaded genbank file information
