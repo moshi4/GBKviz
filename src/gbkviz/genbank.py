@@ -61,7 +61,7 @@ class Genbank:
             f.write(genome_fasta_str)
 
     @staticmethod
-    @st.cache(allow_output_mutation=True)
+    @st.cache(allow_output_mutation=True, ttl=3600)
     def read_upload_gbk_file(upload_gbk_file: UploadedFile) -> Genbank:
         """Read uploaded genbank file from Streamlit app
 
