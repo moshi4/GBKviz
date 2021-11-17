@@ -27,7 +27,7 @@ class AlignCoord:
     def get_cross_link(
         self,
         name2track: Dict[str, Track],
-        minus_bp: int = 0,
+        name2start: Dict[str, int],
         normal_color: str = "#0000FF",  # Blue
         inverted_color: str = "#FF0000",  # Red
     ) -> CrossLink:
@@ -35,19 +35,20 @@ class AlignCoord:
 
         Args:
             name2track (Dict[str, Track]): Name and Track dictionary
-            minus_bp (int, optional): Adjust minus bp value
-            normal_color (str, optional): Normal cross link hexcolor
-            inverted_color (str, optional): Inverted cross link hexcolor
+            name2start (Dict[str, int]): Name and Start(bp) dictionary
+            normal_color (str): Normal cross link hexcolor (Default='#0000FF'[Blue])
+            inverted_color (str): Inverted cross link hexcolor (Default='#FF0000'[Red])
 
         Returns:
             CrossLink: Cross link object
         """
         # Change cross link bp
-        ref_start = self.ref_start - minus_bp
-        ref_end = self.ref_end - minus_bp
-        query_start = self.query_start - minus_bp
-        query_end = self.query_end - minus_bp
+        ref_start = self.ref_start - name2start[self.ref_name]
+        ref_end = self.ref_end - name2start[self.ref_name]
+        query_start = self.query_start - name2start[self.query_name]
+        query_end = self.query_end - name2start[self.query_name]
 
+        # Set cross link color
         if self.is_inverted:
             cross_link_color = HexColor(inverted_color)
         else:
@@ -62,6 +63,7 @@ class AlignCoord:
             featureA=(name2track[self.ref_name], ref_start, ref_end),
             featureB=(name2track[self.query_name], query_start, query_end),
             color=gradient_cross_link_color,
+            flip=self.is_inverted,
         )
 
     @property

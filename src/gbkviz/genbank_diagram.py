@@ -106,12 +106,15 @@ def gbk2fig(
     for track in gd.get_tracks():
         name2track[track.name] = track
 
+    name2start: Dict[str, int] = {}
+    for gbk, start_pos in zip(gbk_list, start_pos_list):
+        name2start[gbk.name] = start_pos
+
     cross_links = []
     for align_coord in align_coords:
-        # TODO: Set appropriate minus_bp value
         cross_link = align_coord.get_cross_link(
             name2track=name2track,
-            minus_bp=0,
+            name2start=name2start,
             normal_color=cross_link_color,
             inverted_color=inverted_cross_link_color,
         )
