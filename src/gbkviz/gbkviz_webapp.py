@@ -225,6 +225,7 @@ if upload_files:
                 max_value=gbk.max_length,
                 value=0,
                 step=1000,
+                key=gbk.name,
             )
             default_max_value = gbk.max_length if gbk.max_length <= 100000 else 100000
             max_value = range_cols[1].number_input(
@@ -233,6 +234,7 @@ if upload_files:
                 max_value=gbk.max_length,
                 value=default_max_value,
                 step=1000,
+                key=gbk.name,
             )
 
             length = int(max_value - min_value)
