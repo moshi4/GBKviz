@@ -42,11 +42,18 @@ class AlignCoord:
         Returns:
             CrossLink: Cross link object
         """
-        # Change cross link bp
-        ref_start = self.ref_start - name2start[self.ref_name]
-        ref_end = self.ref_end - name2start[self.ref_name]
-        query_start = self.query_start - name2start[self.query_name]
-        query_end = self.query_end - name2start[self.query_name]
+        # Get cross link start-end of reference and query
+        ref_adjust_bp = name2start[self.ref_name]
+        query_adjust_bp = name2start[self.query_name]
+        ref_start = min(self.ref_start, self.ref_end) - ref_adjust_bp
+        ref_end = max(self.ref_start, self.ref_end) - ref_adjust_bp
+        query_start = min(self.query_start, self.query_end) - query_adjust_bp
+        query_end = max(self.query_start, self.query_end) - query_adjust_bp
+
+        # GenomeDiagram cannot draw cross link color correctly in this condition
+        # To handle this drawing error, add 1 bp length to ref_start
+        if self.ref_length == self.query_length and self.is_inverted:
+            ref_start += 1
 
         # Set cross link color
         if self.is_inverted:
@@ -63,6 +70,7 @@ class AlignCoord:
             featureA=(name2track[self.ref_name], ref_start, ref_end),
             featureB=(name2track[self.query_name], query_start, query_end),
             color=gradient_cross_link_color,
+            border=gradient_cross_link_color,
             flip=self.is_inverted,
         )
 
