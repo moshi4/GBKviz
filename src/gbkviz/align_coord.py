@@ -50,8 +50,8 @@ class AlignCoord:
         query_start = min(self.query_start, self.query_end) - query_adjust_bp
         query_end = max(self.query_start, self.query_end) - query_adjust_bp
 
-        # GenomeDiagram cannot draw cross link color correctly in this condition
-        # To handle this drawing error, add 1 bp length to ref_start
+        # GenomeDiagram cannot draw cross link color correctly in condition below
+        # To resolve this drawing error, add 1 bp length to ref_start
         if self.ref_length == self.query_length and self.is_inverted:
             ref_start += 1
 

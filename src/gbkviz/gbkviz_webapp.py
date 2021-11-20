@@ -8,7 +8,7 @@ from streamlit.uploaded_file_manager import UploadedFile
 
 from gbkviz.align_coord import AlignCoord
 from gbkviz.genbank import Genbank
-from gbkviz.genbank_diagram import gbk2fig
+from gbkviz.genbank_diagram import draw_gbk_fig
 from gbkviz.genome_align import GenomeAlign
 
 # Page basic configuration
@@ -193,8 +193,8 @@ if upload_files:
     # Main Screen Widgets
     ###########################################################
     gbk_list: List[Genbank] = []
-    min_value_list: List[int] = []
-    max_value_list: List[int] = []
+    min_ranges: List[int] = []
+    max_ranges: List[int] = []
     gbk_info_list: List[str] = []
 
     gbk_info_placeholder = st.empty()
@@ -219,7 +219,7 @@ if upload_files:
 
             # Min-Max range input widget
             range_label = f"{gbk.name} (Max={gbk.max_length:,} bp)"
-            min_value = range_cols[0].number_input(
+            min_range = range_cols[0].number_input(
                 label=range_label,
                 min_value=0,
                 max_value=gbk.max_length,
@@ -227,22 +227,22 @@ if upload_files:
                 step=1000,
                 key=gbk.name,
             )
-            default_max_value = gbk.max_length if gbk.max_length <= 100000 else 100000
-            max_value = range_cols[1].number_input(
+            default_max_range = gbk.max_length if gbk.max_length <= 100000 else 100000
+            max_range = range_cols[1].number_input(
                 label="",
                 min_value=0,
                 max_value=gbk.max_length,
-                value=default_max_value,
+                value=default_max_range,
                 step=1000,
                 key=gbk.name,
             )
 
-            length = int(max_value - min_value)
+            length = int(max_range - min_range)
             gbk_info_list.append(
-                f"{gbk.name} ({min_value:,} - {max_value:,} bp), Length={length:,} bp"
+                f"{gbk.name} ({min_range:,} - {max_range:,} bp), Length={length:,} bp"
             )
-            min_value_list.append(int(min_value))
-            max_value_list.append(int(max_value))
+            min_ranges.append(int(min_range))
+            max_ranges.append(int(max_range))
 
     # Genome comparison
     align_coords: List[AlignCoord] = []
@@ -268,26 +268,26 @@ if upload_files:
     gbk_info_placeholder.markdown(all_gbk_info)
 
     # Create visualization and comparison figure
-    jpg_bytes, format_bytes = gbk2fig(
+    jpg_bytes, format_bytes = draw_gbk_fig(
         gbk_list=gbk_list,
-        start_pos_list=min_value_list,
-        end_pos_list=max_value_list,
-        feature2color=feature2color,
-        fig_width=fig_width,
-        fig_track_height=fig_track_height,
+        min_ranges=min_ranges,
+        max_ranges=max_ranges,
+        align_coords=align_coords,
+        fig_format=fig_format,
         show_label=show_label,
-        show_ticks=show_ticks,
         show_scale=show_scale,
+        show_ticks=show_ticks,
         label_type=label_type,
         feature_symbol=feature_symbol,
         label_angle=label_angle,
-        target_features=target_features,
         scaleticks_interval=scaleticks_interval,
-        fig_track_size=fig_track_size,
         label_fsize=int(label_fsize),
         scaleticks_fsize=int(scaleticks_fsize),
-        fig_format=fig_format,
-        align_coords=align_coords,
+        fig_width=fig_width,
+        fig_track_height=fig_track_height,
+        fig_track_size=fig_track_size,
+        target_features=target_features,
+        feature2color=feature2color,
         cross_link_color=cross_link_color,
         inverted_cross_link_color=inverted_cross_link_color,
     )
