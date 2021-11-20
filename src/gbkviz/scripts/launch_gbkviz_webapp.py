@@ -7,6 +7,7 @@ def main():
     """Launch Streamlit GBKviz webapp"""
     # Streamlit env setting
     os.environ["STREAMLIT_THEME_BASE"] = "dark"
+    os.environ["STREAMLIT_BROWSER_GATHER_USAGE_STATS"] = "false"
 
     # Launch Streamlit app
     gbkviz_dir = Path(__file__).parent.parent
