@@ -2,9 +2,9 @@
 
 ## Overview
 
-GBKviz is web-based Genbank format file vizualization tool.  
-User can easily and flexibly plot genome gene figure in any format.  
-In addition, conserved synteny region can plot.  
+GBKviz is browser-based Genbank data vizualization webapp.  
+User can easily and flexibly plot specified region genome CDS figure in any format.  
+In addition, GBKvis can perform comparative genome plot figure.  
 
 Demo GIF here...
 
@@ -12,7 +12,7 @@ Demo GIF here...
 
 GBKviz is implemented with Python3 (Tested on Ubuntu20.04)
 
-~~Install PyPI stable version with pip:~~
+Install PyPI stable version with pip:
 
     pip install gbkviz
 
@@ -28,7 +28,7 @@ Install latest development version with pip:
 - [BioPython](https://github.com/biopython/biopython)  
   Utility tools for computational molecular biology
 
-- [Mummer](https://github.com/mummer4/mummer) (Optional)  
+- [MUMmer](https://github.com/mummer4/mummer) (Optional)  
   Genome alignment tool for comparative genomics (v3 or v4)
   
 ## Command Usage
