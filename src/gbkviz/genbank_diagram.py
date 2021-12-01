@@ -93,16 +93,17 @@ def draw_gbk_fig(
             scale_largeticks=0.4,
             scale_largetick_interval=9999999999,  # Set large value to disable largetick
             scale_largetick_labels=False,
-            axis_label=True,
+            axis_labels=True,
         ).new_set()
 
         for feature in gbk.extract_features(target_features):
             # Make location fixed feature
-            start = feature.location.start - min_range
-            end = feature.location.end - min_range
-            strand = feature.strand
             feature = SeqFeature(
-                location=FeatureLocation(start, end, strand),
+                location=FeatureLocation(
+                    feature.location.start - min_range,
+                    feature.location.end - min_range,
+                    feature.strand,
+                ),
                 type=feature.type,
                 qualifiers=feature.qualifiers,
             )
@@ -132,12 +133,8 @@ def draw_gbk_fig(
             )
 
     # Get cross links
-    name2track: Dict[str, Track] = {}
-    for track in gd.get_tracks():
-        name2track[track.name] = track
-    name2start: Dict[str, int] = {}
-    for gbk, min_range in zip(gbk_list, min_ranges):
-        name2start[gbk.name] = min_range
+    name2track: Dict[str, Track] = {track.name: track for track in gd.get_tracks()}
+    name2start: Dict[str, int] = {gbk.name: mr for gbk, mr in zip(gbk_list, min_ranges)}
     cross_links = []
     for align_coord in align_coords:
         cross_link = align_coord.get_cross_link(
@@ -149,13 +146,14 @@ def draw_gbk_fig(
         cross_links.append(cross_link)
 
     # Set figure draw settings
+    max_length = max([max_r - min_r for min_r, max_r in zip(min_ranges, max_ranges)])
     gd.draw(
         format="linear",
         orientation="landscape",
         pagesize=(fig_width * cm, fig_track_height * len(gbk_list) * cm),  # X, Y
         fragments=1,
         start=0,
-        end=max([max_r - min_r for min_r, max_r in zip(min_ranges, max_ranges)]),
+        end=max_length,
         tracklines=False,
         track_size=fig_track_size,
         cross_track_links=cross_links,

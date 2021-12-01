@@ -13,7 +13,7 @@ from gbkviz.genome_align import GenomeAlign
 
 # Page basic configuration
 st.set_page_config(
-    page_title="GBKviz: Genbank Data Visualization Tool",
+    page_title="GBKviz: Genbank Data Visualization WebApp",
     layout="centered",
     initial_sidebar_state="expanded",
     menu_items={
@@ -22,7 +22,7 @@ st.set_page_config(
     },
 )
 
-st.header("GBKviz: Genbank Data Visualization Tool")
+st.header("GBKviz: Genbank Data Visualization WebApp")
 
 ###########################################################
 # Sidebar Parameters Widgets
