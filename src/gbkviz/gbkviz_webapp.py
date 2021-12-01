@@ -56,7 +56,7 @@ if upload_files:
     check_cols = st.sidebar.columns(3)
     show_label = check_cols[0].checkbox("Label", False)
     show_scale = check_cols[1].checkbox("Scale", True)
-    show_ticks = check_cols[2].checkbox("ScaleTicks", True)
+    show_ticks = check_cols[2].checkbox("ScaleTicks", False)
 
     # Figure appearence control widgets
     fig_appearence_cols: List[DeltaGenerator]
