@@ -1,8 +1,26 @@
 [tool.poetry]
 name = "GBKviz"
 version = "0.0.0"
-description = "Genbank data visualization tool"
+description = "Genbank data visualization webapp"
 authors = ["moshi"]
+license = "MIT"
+homepage = "https://github.com/moshi4/GBKviz/"
+repository = "https://github.com/moshi4/GBKviz/"
+readme = "README.md"
+keywords = [
+    "gbkviz",
+    "bioinformatics",
+    "streamlit",
+    "genomics",
+    "visualization",
+]
+classifiers = [
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+]
+
+[tool.poetry-dynamic-versioning]
+enable = true
 
 [tool.poetry.dependencies]
 python = "^3.8"
