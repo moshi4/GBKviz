@@ -155,13 +155,6 @@ if upload_files:
         "misc_feature": misc_color,
     }
 
-    # Reverse target multiselect widget
-    reverse_target_names = st.sidebar.multiselect(
-        label="Reverse Genome",
-        options=[Path(f.name).stem for f in upload_files],
-        default=[],
-    )
-
     genome_comparison = None
     cross_link_color = ""
     inverted_cross_link_color = ""
@@ -210,11 +203,10 @@ if upload_files:
         st.markdown("**Display Genome Min-Max Range Option**")
 
         range_cols: List[DeltaGenerator]
-        range_cols = st.columns(2)
+        range_cols = st.columns([3, 3, 1])
 
         for upload_gbk_file in upload_files:
             gbk = Genbank.read_upload_gbk_file(upload_gbk_file)
-            gbk.reverse = True if gbk.name in reverse_target_names else False
             gbk_list.append(gbk)
 
             # Min-Max range input widget
@@ -236,6 +228,13 @@ if upload_files:
                 step=1000,
                 key=gbk.name,
             )
+            reverse = range_cols[2].selectbox(
+                label="Reverse",
+                options=["Yes", "No"],
+                index=1,
+                key=gbk.name,
+            )
+            gbk.reverse = True if reverse == "Yes" else False
 
             length = int(max_range - min_range)
             gbk_info_list.append(
