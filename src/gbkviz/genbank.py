@@ -36,19 +36,19 @@ class Genbank:
         else:
             return self._record
 
-    def extract_features(self, target_features: List[str]) -> List[SeqFeature]:
+    def extract_features(self, target_feature_types: List[str]) -> List[SeqFeature]:
         """Extract target features
 
         Args:
-            target_features (List[str]): Target features type to extract
+            target_feature_types (List[str]): Target feature type to extract
 
         Returns:
             List[SeqFeature]: Extract feature list
 
         Note:
-             Target features: "CDS", "gene", "tRNA", "misc_feature"
+             Target feature types: "CDS", "gene", "tRNA", "misc_feature"
         """
-        return [f for f in self.record.features if f.type in target_features]
+        return [f for f in self.record.features if f.type in target_feature_types]
 
     def write_genome_fasta(self, outfile: Union[str, Path]) -> None:
         """Write genome fasta file

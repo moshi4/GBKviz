@@ -7,8 +7,8 @@ from streamlit.delta_generator import DeltaGenerator
 from streamlit.uploaded_file_manager import UploadedFile
 
 from gbkviz.align_coord import AlignCoord
+from gbkviz.draw_genbank_fig import DrawGenbankFig
 from gbkviz.genbank import Genbank
-from gbkviz.genbank_diagram import draw_gbk_fig
 from gbkviz.genome_align import GenomeAlign
 
 # Page basic configuration
@@ -267,12 +267,11 @@ if upload_files:
     gbk_info_placeholder.markdown(all_gbk_info)
 
     # Create visualization and comparison figure
-    jpg_bytes, format_bytes = draw_gbk_fig(
+    dgf = DrawGenbankFig(
         gbk_list=gbk_list,
         min_ranges=min_ranges,
         max_ranges=max_ranges,
         align_coords=align_coords,
-        fig_format=fig_format,
         show_label=show_label,
         show_scale=show_scale,
         show_ticks=show_ticks,
@@ -285,17 +284,18 @@ if upload_files:
         fig_width=fig_width,
         fig_track_height=fig_track_height,
         fig_track_size=fig_track_size,
-        target_features=target_features,
+        target_feature_types=target_features,
         feature2color=feature2color,
         cross_link_color=cross_link_color,
         inverted_cross_link_color=inverted_cross_link_color,
     )
+    jpg_bytes = dgf.get_figure("jpg")
     fig_placeholder.image(jpg_bytes, use_column_width="never")
 
     # Download figure button widget
     dl_fig_btn_placeholder.download_button(
         label=f"Download Figure ({fig_format.upper()} Format)",
-        data=format_bytes,
+        data=dgf.get_figure(fig_format),
         file_name=f"gbkviz_figure.{fig_format}",
     )
 
