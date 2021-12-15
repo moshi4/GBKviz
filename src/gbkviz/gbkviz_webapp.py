@@ -310,3 +310,9 @@ if upload_files:
             data=header + "\n".join([ac.as_tsv_format for ac in align_coords]),
             file_name="gbkviz_comparison.tsv",
         )
+else:
+    # No Uploaded files, display toppage contents
+    tutorial_md_file = Path(__file__).parent / "toppage.md"
+    with open(tutorial_md_file) as f:
+        tutorial_content = f.read()
+    st.markdown(tutorial_content)
