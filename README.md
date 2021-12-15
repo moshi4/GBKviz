@@ -1,4 +1,9 @@
-# GBKviz: Genbank Data Visuzalization tool
+# GBKviz: Genbank Data Visuzalization WebApp
+
+![Python3](https://img.shields.io/badge/Language-Python3-steelblue)
+![License](https://img.shields.io/badge/License-MIT-steelblue)
+[![Latest PyPI version](https://img.shields.io/pypi/v/gbkviz.svg)](https://pypi.python.org/pypi/gbkviz)  
+[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io/moshi4/gbkviz/main/src/gbkviz/gbkviz_webapp.py)
 
 ## Overview
 
