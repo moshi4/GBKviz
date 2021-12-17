@@ -1,4 +1,4 @@
-# GBKviz: Genbank Data Visuzalization WebApp
+# GBKviz: Genbank Data Visualization WebApp
 
 ![Python3](https://img.shields.io/badge/Language-Python3-steelblue)
 ![License](https://img.shields.io/badge/License-MIT-steelblue)
@@ -9,7 +9,7 @@
 
 GBKviz is browser-based Genbank data vizualization webapp.  
 User can easily and flexibly plot specified region genome CDS figure in any format.  
-In addition, GBKvis can perform comparative genome plot figure.  
+In addition, GBKviz can perform comparative genome plot figure using MUMmer.  
 
 Demo GIF here...
 
@@ -28,12 +28,12 @@ Install latest development version with pip:
 ### Dependencies
 
 - [Streamlit](https://streamlit.io/)  
-  Web app framework for quick development
+  Web framework for quick development
 
 - [BioPython](https://github.com/biopython/biopython)  
   Utility tools for computational molecular biology
 
-- [MUMmer](https://github.com/mummer4/mummer) (Optional)  
+- [MUMmer](https://github.com/mummer4/mummer)  
   Genome alignment tool for comparative genomics (v3 or v4)
   
 ## Command Usage
