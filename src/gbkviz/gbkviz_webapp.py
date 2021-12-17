@@ -10,6 +10,7 @@ from gbkviz.align_coord import AlignCoord
 from gbkviz.draw_genbank_fig import DrawGenbankFig
 from gbkviz.genbank import Genbank
 from gbkviz.genome_align import GenomeAlign
+from gbkviz.load_files import load_files
 
 # Page basic configuration
 st.set_page_config(
@@ -32,15 +33,20 @@ st.header("GBKviz: Genbank Data Visualization WebApp")
 repo_hyperlink = "[GBKviz (GitHub)](https://github.com/moshi4/GBKviz/)"
 st.sidebar.markdown(repo_hyperlink)
 
-with st.sidebar.expander(label="Toggle Genbank Upload Box", expanded=True):
-
-    # Genbank files upload widgets
-    upload_files: List[UploadedFile]
-    upload_files = st.file_uploader(
-        label="Upload your genbank files (*.gb|*.gbk)",
-        type=["gb", "gbk"],
-        accept_multiple_files=True,
-    )
+# Load example files or Upload files
+if st.sidebar.checkbox(label="Load example genbank files", value=False):
+    genbank_dir = Path(__file__).parent / "genbank"
+    gbk_files = list(genbank_dir.glob("*.gbk"))
+    upload_files = load_files(gbk_files)
+else:
+    with st.sidebar.expander(label="Toggle Genbank Upload Box", expanded=True):
+        # Genbank files upload widgets
+        upload_files: List[UploadedFile]
+        upload_files = st.file_uploader(
+            label="Upload your genbank files (*.gb|*.gbk)",
+            type=["gb", "gbk"],
+            accept_multiple_files=True,
+        )
 
 if upload_files:
     # Download format selectbox widgets
