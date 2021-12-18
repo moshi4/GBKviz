@@ -32,8 +32,6 @@ streamlit = "^1.1.0"
 black = "^21.10b0"
 flake8 = "^4.0.1"
 pydocstyle = "^6.1.1"
-ipykernel = "^6.5.0"
-ipython = "^7.29.0"
 
 [tool.poetry.scripts]
 gbkviz_webapp = "gbkviz.scripts.launch_gbkviz_webapp:main"
