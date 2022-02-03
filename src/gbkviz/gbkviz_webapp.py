@@ -140,9 +140,9 @@ if upload_files:
         step=0.1,
     )
 
-    # Target features selection widget
-    target_features = st.sidebar.multiselect(
-        label="Target Feature Selection",
+    # Target feature types widget
+    target_feature_types = st.sidebar.multiselect(
+        label="Target Feature Types",
         options=["CDS", "gene", "tRNA", "misc_feature"],
         default=["CDS"],
     )
@@ -206,7 +206,7 @@ if upload_files:
 
         st.form_submit_button(label="Update Figure")
 
-        st.markdown("**Display Genome Min-Max Range Option**")
+        st.markdown("**Display Genome Min-Max Range & Reverse Option**")
 
         range_cols: List[DeltaGenerator]
         range_cols = st.columns([3, 3, 1])
@@ -290,7 +290,7 @@ if upload_files:
         fig_width=fig_width,
         fig_track_height=fig_track_height,
         fig_track_size=fig_track_size,
-        target_feature_types=target_features,
+        target_feature_types=target_feature_types,
         feature2color=feature2color,
         cross_link_color=cross_link_color,
         inverted_cross_link_color=inverted_cross_link_color,
