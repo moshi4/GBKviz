@@ -10,7 +10,7 @@ from gbkviz.align_coord import AlignCoord
 from gbkviz.draw_genbank_fig import DrawGenbankFig
 from gbkviz.genbank import Genbank
 from gbkviz.genome_align import GenomeAlign
-from gbkviz.load_files import load_files
+from gbkviz.util import load_files, make_session_dir, remove_olddir
 
 # Page basic configuration
 st.set_page_config(
@@ -249,22 +249,30 @@ if upload_files:
             min_ranges.append(int(min_range))
             max_ranges.append(int(max_range))
 
-    # Genome comparison
+    # Genome alignment
     align_coords: List[AlignCoord] = []
+    gbkviz_tmpdir = Path("gbkviz_tmpwork")
+    gbkviz_tmpdir.mkdir(exist_ok=True)
     if genome_comparison is not None:
         genome_fasta_files: List[Path] = []
-        gbkviz_tmpdir = Path("tmpwork_gbkviz")
-        os.makedirs(gbkviz_tmpdir, exist_ok=True)
+        gbkviz_session_tmpdir = make_session_dir(gbkviz_tmpdir)
         for gbk in gbk_list:
             # Make genome fasta file
             suffix = "_reverse.fa" if gbk.reverse else ".fa"
-            genome_fasta_file = Path(gbkviz_tmpdir) / (gbk.name + suffix)
+            genome_fasta_file = Path(gbkviz_session_tmpdir) / (gbk.name + suffix)
             if not genome_fasta_file.exists():
                 gbk.write_genome_fasta(genome_fasta_file)
             genome_fasta_files.append(genome_fasta_file)
+        # Run MUMmer genome alignment
         seqtype, maptype = genome_comparison.split(" ")
-        genome_align = GenomeAlign(genome_fasta_files, gbkviz_tmpdir, seqtype, maptype)
+        genome_align = GenomeAlign(
+            genome_fasta_files, gbkviz_session_tmpdir, seqtype, maptype
+        )
         align_coords = genome_align.run()
+
+    # Remove old genome comparison result directory
+    for session_dir in gbkviz_tmpdir.iterdir():
+        remove_olddir(session_dir)
 
     # Uploaded genbank file information
     all_gbk_info = ""
