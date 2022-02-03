@@ -26,7 +26,7 @@ enable = true
 python = "^3.8"
 biopython = "^1.79"
 reportlab = "^3.6.2"
-streamlit = "^1.1.0"
+streamlit = "^1.5.0"
 
 [tool.poetry.dev-dependencies]
 black = "^21.10b0"
