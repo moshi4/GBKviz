@@ -1,29 +1,32 @@
+[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io/moshi4/gbkviz/main/src/gbkviz/gbkviz_webapp.py)
+
 # GBKviz: Genbank Data Visualization WebApp
 
 ![Python3](https://img.shields.io/badge/Language-Python3-steelblue)
 ![License](https://img.shields.io/badge/License-MIT-steelblue)
 [![Latest PyPI version](https://img.shields.io/pypi/v/gbkviz.svg)](https://pypi.python.org/pypi/gbkviz)  
-[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io/moshi4/gbkviz/main/src/gbkviz/gbkviz_webapp.py)
 
 ## Overview
 
-GBKviz is browser-based Genbank data vizualization webapp.  
-User can easily and flexibly plot specified region genome CDS figure in any format.  
-In addition, GBKviz can perform comparative genome plot figure using MUMmer.  
+GBKviz is a web-based Genbank data visualization tool developed with Streamlit web framework.
+GBKviz allows user to easily and flexibly draw CDSs in specified genomic region.
+It also supports drawing genome comparison results by MUMmer.
 
 Demo GIF here...
 
 ## Install
 
-GBKviz is implemented with Python3 (Tested on Ubuntu20.04)
+GBKviz is implemented in Python3 (Tested on Ubuntu20.04)
 
 Install PyPI stable version with pip:
 
     pip install gbkviz
 
-Install latest development version with pip:
+If you want to enable genome comparison in GBKviz, MUMmer is required.  
 
-    pip install git+git://github.com/moshi4/GBKviz.git
+Install MUMmer with apt command (Ubuntu):
+
+    sudo apt install mummer
 
 ### Dependencies
 
@@ -34,12 +37,37 @@ Install latest development version with pip:
   Utility tools for computational molecular biology
 
 - [MUMmer](https://github.com/mummer4/mummer)  
-  Genome alignment tool for comparative genomics (v3 or v4)
+  Genome alignment tool for comparative genomics
   
 ## Command Usage
 
-Launch GBKviz in web browser:
+Launch GBKviz in web browser (<http://localhost:8501>):
 
     gbkviz_webapp
 
 ## Usage
+
+### SideBar Widgets
+
+- `Load example genbank files` *Checkbox*
+- `Download Figure Format` *Selectbox*
+- `Label` *Checkbox*
+- `ScaleTicks` *Checkbox*
+- `TopOnly` *Checkbox*
+- `Feature Label Types` *Selectbox*
+- `Feature Symbol` *Selectbox*
+- `Label Angle` *Selectbox*
+- `ScaleTicks Interval` *Selectbox*
+- `Label Font Size` *Numberinput*
+- `ScaleTicks Font Size` *Numberinput*
+- `Fig Width` *Slider*
+- `Fig Track Height` *Slider*
+- `Fig Track Size` *Slider*
+- `Target Feature Types` *Multiselect*
+- `CDS` *Colorpicker*
+- `gene` *Colorpicker*
+- `tRNA` *Colorpicker*
+- `misc` *Colorpicker*
+- `Genome Comparison Type` *Selectbox*
+- `Cross Link (Normal)` *Colorpicker*
+- `Cross Link (Inverted)` *Colorpicker*
