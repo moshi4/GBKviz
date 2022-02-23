@@ -250,7 +250,7 @@ if upload_files:
 
     # Genome alignment
     align_coords: List[AlignCoord] = []
-    gbkviz_tmpdir = Path("gbkviz_tmpwork")
+    gbkviz_tmpdir = Path.home() / ".gbkviz"
     gbkviz_tmpdir.mkdir(exist_ok=True)
     if genome_comparison is not None:
         genome_fasta_files: List[Path] = []
