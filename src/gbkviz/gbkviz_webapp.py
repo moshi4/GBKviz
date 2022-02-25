@@ -48,14 +48,6 @@ else:
         )
 
 if upload_files:
-    # Download format selectbox widgets
-    fig_format = st.sidebar.selectbox(
-        label="Download Figure Format (JPG/PNG/SVG/PDF)",
-        options=["JPG", "PNG", "SVG", "PDF"],
-        index=0,
-    )
-    fig_format = str(fig_format).lower()
-
     # Visibility control checkbox widgets
     check_cols = List[DeltaGenerator]
     check_cols = st.sidebar.columns(3)
@@ -196,9 +188,10 @@ if upload_files:
     gbk_info_list: List[str] = []
 
     gbk_info_placeholder = st.empty()
-    dl_btn_cols = st.columns(2)
-    dl_fig_btn_placeholder = dl_btn_cols[0].empty()
-    dl_align_coords_btn_placeholder = dl_btn_cols[1].empty()
+    dl_btn_cols = st.columns([3, 3, 5])
+    dl_png_btn_placeholder = dl_btn_cols[0].empty()
+    dl_svg_btn_placeholder = dl_btn_cols[1].empty()
+    dl_align_coords_btn_placeholder = dl_btn_cols[2].empty()
     fig_placeholder = st.empty()
 
     with st.form(key="form"):
@@ -302,14 +295,21 @@ if upload_files:
         target_feature_types=target_feature_types,
         feature2color=feature2color,
     )
-    jpg_bytes = dgf.get_figure("jpg")
-    fig_placeholder.image(jpg_bytes, use_column_width="never")
+
+    # Show figure
+    png_bytes = dgf.get_figure("png")
+    fig_placeholder.image(png_bytes, use_column_width="never")
 
     # Download figure button widget
-    dl_fig_btn_placeholder.download_button(
-        label=f"Download Figure ({fig_format.upper()} Format)",
-        data=dgf.get_figure(fig_format),
-        file_name=f"gbkviz_figure.{fig_format}",
+    dl_png_btn_placeholder.download_button(
+        label=f"Download PNG Figure",
+        data=png_bytes,
+        file_name=f"gbkviz_figure.png",
+    )
+    dl_svg_btn_placeholder.download_button(
+        label=f"Download SVG Figure",
+        data=dgf.get_figure("svg"),
+        file_name=f"gbkviz_figure.svg",
     )
 
     # Download align coords button widget
@@ -319,7 +319,7 @@ if upload_files:
             + "QUERY_LENGTH\tIDENTITY\tREF_NAME\tQUERY_NAME\n"
         )
         dl_align_coords_btn_placeholder.download_button(
-            label="Download Comparison Result (TSV Format)",
+            label="Download Comparison Result",
             data=header + "\n".join([ac.as_tsv_format for ac in align_coords]),
             file_name="gbkviz_comparison.tsv",
         )
