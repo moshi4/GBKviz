@@ -45,10 +45,10 @@ class AlignCoord:
         # Get cross link start-end of reference and query
         ref_adjust_bp = name2start[self.ref_name]
         query_adjust_bp = name2start[self.query_name]
-        ref_start = min(self.ref_start, self.ref_end) - ref_adjust_bp
-        ref_end = max(self.ref_start, self.ref_end) - ref_adjust_bp
-        query_start = min(self.query_start, self.query_end) - query_adjust_bp
-        query_end = max(self.query_start, self.query_end) - query_adjust_bp
+        ref_start = min(self.ref_start, self.ref_end) - ref_adjust_bp + 1
+        ref_end = max(self.ref_start, self.ref_end) - ref_adjust_bp + 1
+        query_start = min(self.query_start, self.query_end) - query_adjust_bp + 1
+        query_end = max(self.query_start, self.query_end) - query_adjust_bp + 1
 
         # GenomeDiagram cannot draw cross link color correctly in condition below
         # To resolve this drawing error, add 1 bp length to ref_start

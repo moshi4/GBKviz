@@ -45,7 +45,7 @@ class DrawGenbankFig:
     def max_range_length(self) -> int:
         """Max range length"""
         return max(
-            [max_r - min_r for min_r, max_r in zip(self.min_ranges, self.max_ranges)]
+            [maxr - minr + 1 for minr, maxr in zip(self.min_ranges, self.max_ranges)]
         )
 
     @property
@@ -96,7 +96,7 @@ class DrawGenbankFig:
                 greytrack_labels=0,
                 greytrack_fontcolor=colors.black,
                 start=0,
-                end=max_range - min_range,
+                end=max_range - min_range + 1,
                 scale=self.show_scale,
                 scale_fontsize=self.scaleticks_fsize,
                 scale_fontangle=0,
@@ -116,8 +116,8 @@ class DrawGenbankFig:
                 # Make location fixed feature
                 feature = SeqFeature(
                     location=FeatureLocation(
-                        feature.location.start - min_range,
-                        feature.location.end - min_range,
+                        feature.location.start - min_range + 1,
+                        feature.location.end - min_range + 1,
                         feature.strand,
                     ),
                     type=feature.type,

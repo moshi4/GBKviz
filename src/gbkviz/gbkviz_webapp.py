@@ -218,16 +218,16 @@ if upload_files:
             range_label = f"{gbk.name} (Max={gbk.max_length:,} bp)"
             min_range = range_cols[0].number_input(
                 label=range_label,
-                min_value=0,
+                min_value=1,
                 max_value=gbk.max_length,
-                value=0,
+                value=1,
                 step=1000,
                 key=gbk.name,
             )
             default_max_range = gbk.max_length if gbk.max_length <= 100000 else 100000
             max_range = range_cols[1].number_input(
                 label="",
-                min_value=0,
+                min_value=1,
                 max_value=gbk.max_length,
                 value=default_max_range,
                 step=1000,
@@ -241,7 +241,7 @@ if upload_files:
             )
             gbk.reverse = True if reverse == "Yes" else False
 
-            length = int(max_range - min_range)
+            length = int(max_range - min_range + 1)
             gbk_info_list.append(
                 f"{gbk.name} ({min_range:,} - {max_range:,} bp), Length={length:,} bp"
             )
