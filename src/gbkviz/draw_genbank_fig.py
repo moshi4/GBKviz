@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from io import StringIO
 from pathlib import Path
 from typing import Dict, List, Tuple, Union
@@ -21,22 +21,29 @@ class DrawGenbankFig:
     min_ranges: List[int]
     max_ranges: List[int]
     align_coords: List[AlignCoord]
-    show_label: bool
-    show_scale: bool
-    show_ticks: bool
-    label_type: str
-    feature_symbol: str
-    label_angle: int
-    scaleticks_interval: int
-    label_fsize: int
-    scaleticks_fsize: int
-    fig_width: int
-    fig_track_height: int
-    fig_track_size: float
-    target_feature_types: List[str]
-    feature2color: Dict[str, str]
-    cross_link_color: str
-    inverted_cross_link_color: str
+    show_label: bool = False
+    show_scale: bool = True
+    show_ticks: bool = False
+    label_type: str = "gene"
+    feature_symbol: str = "BIGARROW"
+    label_angle: int = 30
+    scaleticks_interval: int = 10000
+    label_fsize: int = 10
+    scaleticks_fsize: int = 8
+    fig_width: int = 25
+    fig_track_height: int = 3
+    fig_track_size: float = 0.5
+    cross_link_color: str = "#0000FF"
+    inverted_cross_link_color: str = "#FF0000"
+    target_feature_types: List[str] = field(default_factory=lambda: ["CDS"])
+    feature2color: Dict[str, str] = field(
+        default_factory=lambda: {
+            "CDS": "#FFA500",
+            "gene": "#0FE8E4",
+            "tRNA": "#E80F0F",
+            "misc_feature": "#E80FC6",
+        }
+    )
 
     def __post_init__(self):
         self.gd = self._setup_genome_diagram()

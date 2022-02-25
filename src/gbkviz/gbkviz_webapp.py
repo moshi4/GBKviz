@@ -297,10 +297,10 @@ if upload_files:
         fig_width=fig_width,
         fig_track_height=fig_track_height,
         fig_track_size=fig_track_size,
-        target_feature_types=target_feature_types,
-        feature2color=feature2color,
         cross_link_color=cross_link_color,
         inverted_cross_link_color=inverted_cross_link_color,
+        target_feature_types=target_feature_types,
+        feature2color=feature2color,
     )
     jpg_bytes = dgf.get_figure("jpg")
     fig_placeholder.image(jpg_bytes, use_column_width="never")
