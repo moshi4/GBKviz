@@ -39,6 +39,7 @@ class GenomeAlign:
             fa_file2 = self.genome_fasta_files[idx + 1]
 
             # Run genome alignment using nucmer or promer
+            self.outdir = Path(self.outdir)
             prefix = self.outdir / f"out{idx}"
             delta_file = prefix.with_suffix(".delta")
             cmd = f"{self._align_bin} {fa_file1} {fa_file2} --prefix={prefix}"
