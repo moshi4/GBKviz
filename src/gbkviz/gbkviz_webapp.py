@@ -258,9 +258,10 @@ if upload_files:
         for gbk in gbk_list:
             # Make genome fasta file
             suffix = "_reverse.fa" if gbk.reverse else ".fa"
-            genome_fasta_file = Path(gbkviz_session_tmpdir) / (gbk.name + suffix)
+            filename = f"{gbk.name}_{gbk.min_range}-{gbk.max_range}{suffix}"
+            genome_fasta_file = gbkviz_session_tmpdir / filename
             if not genome_fasta_file.exists():
-                gbk.write_genome_fasta(genome_fasta_file)
+                gbk.write_genome_fasta(genome_fasta_file, range=True)
             genome_fasta_files.append(genome_fasta_file)
         # Run MUMmer genome alignment
         seqtype, maptype = genome_comparison.split(" ")

@@ -191,12 +191,10 @@ class DrawGenbankFig:
 
         # Get cross links
         name2track: Dict[str, Track] = {track.name: track for track in gd.get_tracks()}
-        name2start: Dict[str, int] = {gbk.name: gbk.min_range for gbk in self.gbk_list}
         cross_links = []
         for align_coord in self.align_coords:
             cross_link = align_coord.get_cross_link(
                 name2track=name2track,
-                name2start=name2start,
                 normal_color=self.cross_link_color,
                 inverted_color=self.inverted_cross_link_color,
             )

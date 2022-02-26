@@ -27,7 +27,6 @@ class AlignCoord:
     def get_cross_link(
         self,
         name2track: Dict[str, Track],
-        name2start: Dict[str, int],
         normal_color: str = "#0000FF",  # Blue
         inverted_color: str = "#FF0000",  # Red
     ) -> CrossLink:
@@ -35,7 +34,6 @@ class AlignCoord:
 
         Args:
             name2track (Dict[str, Track]): Name and Track dictionary
-            name2start (Dict[str, int]): Name and Start(bp) dictionary
             normal_color (str): Normal cross link hexcolor (Default='#0000FF'[Blue])
             inverted_color (str): Inverted cross link hexcolor (Default='#FF0000'[Red])
 
@@ -43,12 +41,10 @@ class AlignCoord:
             CrossLink: Cross link object
         """
         # Get cross link start-end of reference and query
-        ref_adjust_bp = name2start[self.ref_name]
-        query_adjust_bp = name2start[self.query_name]
-        ref_start = min(self.ref_start, self.ref_end) - ref_adjust_bp + 1
-        ref_end = max(self.ref_start, self.ref_end) - ref_adjust_bp + 1
-        query_start = min(self.query_start, self.query_end) - query_adjust_bp + 1
-        query_end = max(self.query_start, self.query_end) - query_adjust_bp + 1
+        ref_start = min(self.ref_start, self.ref_end)
+        ref_end = max(self.ref_start, self.ref_end)
+        query_start = min(self.query_start, self.query_end)
+        query_end = max(self.query_start, self.query_end)
 
         # GenomeDiagram cannot draw cross link color correctly in condition below
         # To resolve this drawing error, add 1 bp length to ref_start
