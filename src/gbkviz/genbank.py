@@ -105,7 +105,7 @@ class Genbank:
             range (bool): Write range genome or full genome
         """
         if range:
-            write_seq = self.record.seq[self.min_range - 1, self.max_range - 1]
+            write_seq = self.record.seq[self.min_range - 1 : self.max_range - 1]
         else:
             write_seq = self.record.seq
         with open(outfile, "w") as f:
