@@ -2,7 +2,6 @@ import os
 import platform
 import shutil
 import subprocess as sp
-from dataclasses import dataclass
 from pathlib import Path
 from typing import List, Union
 
@@ -11,20 +10,28 @@ import streamlit as st
 from gbkviz.align_coord import AlignCoord
 
 
-@dataclass
 class GenomeAlign:
-    """Run MUMmer Genome Alingmnent Class"""
+    """Run MUMmer Genome Alignment Class"""
 
-    genome_fasta_files: List[Union[str, Path]]
-    outdir: Union[str, Path]
-    seqtype: str = "nucleotide"  # "nucleotide" or "protein"
-    maptype: str = "one-to-one"  # "one-to-one" or "many-to-many"
+    def __init__(
+        self,
+        genome_fasta_files: List[Union[str, Path]],
+        outdir: Union[str, Path],
+        seqtype: str = "nucleotide",
+        maptype: str = "one-to-one",
+    ):
+        """GenomeAlign constructor
 
-    def __post_init__(self):
-        self.genome_fasta_files = [Path(f) for f in self.genome_fasta_files]
-        self.outdir = Path(self.outdir)
-        self.seqtype = self.seqtype.lower()
-        self.maptype = self.maptype.lower()
+        Args:
+            genome_fasta_files (List[Union[str, Path]]): Genome fasta files
+            outdir (Union[str, Path]): Output directory
+            seqtype (str, optional): "nucleotide" or "protein"
+            maptype (str, optional): "one-to-one" or "many-to-many"
+        """
+        self.genome_fasta_files: List[Path] = [Path(f) for f in genome_fasta_files]
+        self.outdir = Path(outdir)
+        self.seqtype = seqtype.lower()
+        self.maptype = maptype.lower()
 
     @st.cache(allow_output_mutation=True, ttl=3600)
     def run(self) -> List[AlignCoord]:
@@ -39,7 +46,6 @@ class GenomeAlign:
             fa_file2 = self.genome_fasta_files[idx + 1]
 
             # Run genome alignment using nucmer or promer
-            self.outdir = Path(self.outdir)
             prefix = self.outdir / f"out{idx}"
             delta_file = prefix.with_suffix(".delta")
             cmd = f"{self._align_bin} {fa_file1} {fa_file2} --prefix={prefix}"
