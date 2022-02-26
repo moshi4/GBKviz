@@ -304,14 +304,14 @@ if upload_files:
 
     # Download figure button widget
     dl_png_btn_placeholder.download_button(
-        label=f"Download PNG Figure",
+        label="Download PNG Figure",
         data=png_bytes,
-        file_name=f"gbkviz_figure.png",
+        file_name="gbkviz_figure.png",
     )
     dl_svg_btn_placeholder.download_button(
-        label=f"Download SVG Figure",
+        label="Download SVG Figure",
         data=dgf.get_figure("svg"),
-        file_name=f"gbkviz_figure.svg",
+        file_name="gbkviz_figure.svg",
     )
 
     # Download align coords button widget
