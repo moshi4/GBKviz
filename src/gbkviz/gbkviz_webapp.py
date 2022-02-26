@@ -234,10 +234,12 @@ if upload_files:
             )
             gbk.reverse = True if reverse == "Yes" else False
 
-            length = int(max_range - min_range + 1)
-            gbk_info_list.append(
-                f"{gbk.name} ({min_range:,} - {max_range:,} bp), Length={length:,} bp"
+            gbk_info = (
+                f"{gbk.name} ({min_range:,} - {max_range:,} bp), "
+                + f"Length={int(max_range - min_range + 1):,} bp, "
+                + f"CDS={gbk.count_feature(int(min_range), int(max_range)):,}"
             )
+            gbk_info_list.append(gbk_info)
             min_ranges.append(int(min_range))
             max_ranges.append(int(max_range))
 

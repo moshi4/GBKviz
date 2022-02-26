@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from io import StringIO
 from pathlib import Path
-from typing import List, Union
+from typing import List, Optional, Union
 
 import streamlit as st
 from Bio import SeqIO
@@ -35,6 +35,36 @@ class Genbank:
             return self._record.reverse_complement()
         else:
             return self._record
+
+    def count_feature(
+        self,
+        start: Optional[int] = None,
+        end: Optional[int] = None,
+        feature_type: str = "CDS",
+    ) -> int:
+        """Count genbank feature
+
+        Args:
+            feature_type (str): Feature type (e.g. "CDS", "tRNA" ...)
+
+        Returns:
+            int: Feature count result
+        """
+        if start is None:
+            start = 1
+        if end is None:
+            end = self.max_length
+
+        features = [f for f in self.record.features if f.type == feature_type]
+        target_range_features = []
+        feature: SeqFeature
+        for feature in features:
+            range_min = int(min(feature.location.start, feature.location.end))
+            range_max = int(max(feature.location.start, feature.location.end))
+            if start <= range_min <= end or start <= range_max <= end:
+                target_range_features.append(feature)
+
+        return len(target_range_features)
 
     def extract_features(self, target_feature_types: List[str]) -> List[SeqFeature]:
         """Extract target features
