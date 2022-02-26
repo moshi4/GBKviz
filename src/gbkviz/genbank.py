@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
 from io import StringIO
 from pathlib import Path
 from typing import List, Optional, Union
@@ -12,16 +11,31 @@ from Bio.SeqRecord import SeqRecord
 from streamlit.uploaded_file_manager import UploadedFile
 
 
-@dataclass
 class Genbank:
     """Genbank Class"""
 
-    gbk_file: Union[str, StringIO, Path]
-    name: str = ""
-    reverse: bool = False
+    def __init__(
+        self,
+        gbk_file: Union[str, StringIO, Path],
+        name: str = "",
+        start: Optional[int] = None,
+        end: Optional[int] = None,
+        reverse: bool = False,
+    ):
+        """Genbank constructor
 
-    def __post_init__(self):
-        self._record: SeqRecord = list(SeqIO.parse(self.gbk_file, "genbank"))[0]
+        Args:
+            gbk_file (Union[str, StringIO, Path]): Genbank file
+            name (str, optional): Name
+            start (Optional[int], optional): start range
+            end (Optional[int], optional): end range
+            reverse (bool, optional): Reverse or not
+        """
+        self._record: SeqRecord = list(SeqIO.parse(gbk_file, "genbank"))[0]
+        self.name: str = name
+        self.start: int = 1 if start is None else start
+        self.end: int = len(self._record.seq) if end is None else end
+        self.reverse: bool = reverse
 
     @property
     def max_length(self) -> int:
