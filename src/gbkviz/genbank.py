@@ -18,8 +18,8 @@ class Genbank:
         self,
         gbk_file: Union[str, StringIO, Path],
         name: str = "",
-        start: Optional[int] = None,
-        end: Optional[int] = None,
+        min_range: Optional[int] = None,
+        max_range: Optional[int] = None,
         reverse: bool = False,
     ):
         """Genbank constructor
@@ -27,14 +27,14 @@ class Genbank:
         Args:
             gbk_file (Union[str, StringIO, Path]): Genbank file
             name (str, optional): Name
-            start (Optional[int], optional): start range
-            end (Optional[int], optional): end range
+            min_range (Optional[int], optional): Min range
+            max_range (Optional[int], optional): Max range
             reverse (bool, optional): Reverse or not
         """
         self._record: SeqRecord = list(SeqIO.parse(gbk_file, "genbank"))[0]
         self.name: str = name
-        self.start: int = 1 if start is None else start
-        self.end: int = len(self._record.seq) if end is None else end
+        self.min_range: int = 1 if min_range is None else min_range
+        self.max_range: int = len(self._record.seq) if max_range is None else max_range
         self.reverse: bool = reverse
 
     @property
