@@ -1,4 +1,3 @@
-from dataclasses import dataclass, field
 from io import StringIO
 from pathlib import Path
 from typing import Dict, List, Tuple, Union
@@ -13,37 +12,76 @@ from gbkviz.align_coord import AlignCoord
 from gbkviz.genbank import Genbank
 
 
-@dataclass
 class DrawGenbankFig:
     """Draw Genbank Figure Class"""
 
-    gbk_list: List[Genbank]
-    align_coords: List[AlignCoord]
-    show_label: bool = False
-    show_scale: bool = True
-    show_ticks: bool = False
-    label_type: str = "gene"
-    feature_symbol: str = "BIGARROW"
-    label_angle: int = 30
-    scaleticks_interval: int = 10000
-    label_fsize: int = 10
-    scaleticks_fsize: int = 8
-    fig_width: int = 25
-    fig_track_height: int = 3
-    fig_track_size: float = 0.5
-    cross_link_color: str = "#0000FF"
-    inverted_cross_link_color: str = "#FF0000"
-    target_feature_types: List[str] = field(default_factory=lambda: ["CDS"])
-    feature2color: Dict[str, str] = field(
-        default_factory=lambda: {
+    def __init__(
+        self,
+        gbk_list: List[Genbank],
+        align_coords: List[AlignCoord] = [],
+        show_label: bool = False,
+        show_scale: bool = True,
+        show_ticks: bool = False,
+        label_type: str = "gene",
+        feature_symbol: str = "BIGARROW",
+        label_angle: int = 30,
+        scaleticks_interval: int = 10000,
+        label_fsize: int = 10,
+        scaleticks_fsize: int = 8,
+        fig_width: int = 25,
+        fig_track_height: int = 3,
+        fig_track_size: float = 0.5,
+        cross_link_color: str = "#0000FF",
+        inverted_cross_link_color: str = "#FF0000",
+        target_feature_types: List[str] = ["CDS"],
+        feature2color: Dict[str, str] = {
             "CDS": "#FFA500",
             "gene": "#0FE8E4",
             "tRNA": "#E80F0F",
             "misc_feature": "#E80FC6",
-        }
-    )
+        },
+    ):
+        """DrawGenbankFig constructor
 
-    def __post_init__(self):
+        Args:
+            gbk_list (List[Genbank]): Genbank class objects
+            align_coords (List[AlignCoord], optional): AlignCoord class objects
+            show_label (bool, optional): Show label or not
+            show_scale (bool, optional): Show scale or not
+            show_ticks (bool, optional): Show ticks or not
+            label_type (str, optional): Label type
+            feature_symbol (str, optional): Feature symbol
+            label_angle (int, optional): Label angle
+            scaleticks_interval (int, optional): Scaleticks interval
+            label_fsize (int, optional): Label font size
+            scaleticks_fsize (int, optional): Scaleticks font size
+            fig_width (int, optional): Figure width (cm)
+            fig_track_height (int, optional): Figure track height (cm)
+            fig_track_size (float, optional): Figure track size
+            cross_link_color (str, optional): Cross link color
+            inverted_cross_link_color (str, optional): Inverted cross link color
+            target_feature_types (List[str], optional): Target feature types
+            feature2color (Dict[str, str], optional): Feature colors dictionary
+        """
+        self.gbk_list: List[Genbank] = gbk_list
+        self.align_coords: List[AlignCoord] = align_coords
+        self.show_label: bool = show_label
+        self.show_scale: bool = show_scale
+        self.show_ticks: bool = show_ticks
+        self.label_type: str = label_type
+        self.feature_symbol: str = feature_symbol
+        self.label_angle: int = label_angle
+        self.scaleticks_interval: int = scaleticks_interval
+        self.label_fsize: int = label_fsize
+        self.scaleticks_fsize: int = scaleticks_fsize
+        self.fig_width: int = fig_width
+        self.fig_track_height: int = fig_track_height
+        self.fig_track_size: float = fig_track_size
+        self.cross_link_color: str = cross_link_color
+        self.inverted_cross_link_color: str = inverted_cross_link_color
+        self.target_feature_types: List[str] = target_feature_types
+        self.feature2color: Dict[str, str] = feature2color
+
         self.gd = self._setup_genome_diagram()
 
     @property
