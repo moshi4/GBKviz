@@ -183,8 +183,6 @@ if upload_files:
     # Main Screen Widgets
     ###########################################################
     gbk_list: List[Genbank] = []
-    min_ranges: List[int] = []
-    max_ranges: List[int] = []
     gbk_info_list: List[str] = []
 
     gbk_info_placeholder = st.empty()
@@ -205,43 +203,50 @@ if upload_files:
 
         for upload_gbk_file in upload_files:
             gbk = Genbank.read_upload_gbk_file(upload_gbk_file)
-            gbk_list.append(gbk)
 
             # Min-Max range input widget
-            range_label = f"{gbk.name} (Max={gbk.max_length:,} bp)"
+            range_label = f"{gbk.name} (Max={gbk.full_length:,} bp)"
             min_range = range_cols[0].number_input(
                 label=range_label,
                 min_value=1,
-                max_value=gbk.max_length,
+                max_value=gbk.full_length,
                 value=1,
                 step=1000,
                 key=gbk.name,
             )
-            default_max_range = gbk.max_length if gbk.max_length <= 100000 else 100000
+            min_range = int(min_range)
+            default_max_range = gbk.full_length if gbk.full_length <= 100000 else 100000
             max_range = range_cols[1].number_input(
                 label="",
                 min_value=1,
-                max_value=gbk.max_length,
+                max_value=gbk.full_length,
                 value=default_max_range,
                 step=1000,
                 key=gbk.name,
             )
+            max_range = int(max_range)
             reverse = range_cols[2].selectbox(
                 label="Reverse",
                 options=["Yes", "No"],
                 index=1,
                 key=gbk.name,
             )
+
+            if min_range > max_range:
+                st.error("'Max Range' must be larger than 'Min Range'")
+                st.stop()
+
+            gbk.min_range = min_range
+            gbk.max_range = max_range
             gbk.reverse = True if reverse == "Yes" else False
 
             gbk_info = (
                 f"{gbk.name} ({min_range:,} - {max_range:,} bp), "
                 + f"Length={int(max_range - min_range + 1):,} bp, "
-                + f"CDS={gbk.count_feature(int(min_range), int(max_range)):,}"
+                + f"CDS={len(gbk.extract_range_features()):,}"
             )
             gbk_info_list.append(gbk_info)
-            min_ranges.append(int(min_range))
-            max_ranges.append(int(max_range))
+            gbk_list.append(gbk)
 
     # Genome alignment
     align_coords: List[AlignCoord] = []
@@ -277,8 +282,6 @@ if upload_files:
     # Create visualization and comparison figure
     dgf = DrawGenbankFig(
         gbk_list=gbk_list,
-        min_ranges=min_ranges,
-        max_ranges=max_ranges,
         align_coords=align_coords,
         show_label=show_label,
         show_scale=show_scale,

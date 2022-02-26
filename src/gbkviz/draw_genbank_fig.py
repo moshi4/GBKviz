@@ -18,8 +18,6 @@ class DrawGenbankFig:
     """Draw Genbank Figure Class"""
 
     gbk_list: List[Genbank]
-    min_ranges: List[int]
-    max_ranges: List[int]
     align_coords: List[AlignCoord]
     show_label: bool = False
     show_scale: bool = True
@@ -51,9 +49,7 @@ class DrawGenbankFig:
     @property
     def max_range_length(self) -> int:
         """Max range length"""
-        return max(
-            [maxr - minr + 1 for minr, maxr in zip(self.min_ranges, self.max_ranges)]
-        )
+        return max(gbk.range_length for gbk in self.gbk_list)
 
     @property
     def draw_pagesize(self) -> Tuple[float, float]:
@@ -92,9 +88,7 @@ class DrawGenbankFig:
         # Create GenomeDiagram.Diagram object
         gd = GenomeDiagram.Diagram("Genbank Genome Diagram")
 
-        for gbk, min_range, max_range in zip(
-            self.gbk_list, self.min_ranges, self.max_ranges
-        ):
+        for gbk in self.gbk_list:
             # Add track of one genbank
             gd_feature_set: FeatureSet = gd.new_track(
                 track_level=0,
@@ -103,7 +97,7 @@ class DrawGenbankFig:
                 greytrack_labels=0,
                 greytrack_fontcolor=colors.black,
                 start=0,
-                end=max_range - min_range + 1,
+                end=gbk.range_length,
                 scale=self.show_scale,
                 scale_fontsize=self.scaleticks_fsize,
                 scale_fontangle=0,
@@ -119,12 +113,12 @@ class DrawGenbankFig:
                 axis_labels=True,
             ).new_set()
 
-            for feature in gbk.extract_features(self.target_feature_types):
+            for feature in gbk.extract_range_features(self.target_feature_types):
                 # Make location fixed feature
                 feature = SeqFeature(
                     location=FeatureLocation(
-                        feature.location.start - min_range + 1,
-                        feature.location.end - min_range + 1,
+                        feature.location.start - gbk.min_range + 1,
+                        feature.location.end - gbk.min_range + 1,
                         feature.strand,
                     ),
                     type=feature.type,
@@ -159,9 +153,7 @@ class DrawGenbankFig:
 
         # Get cross links
         name2track: Dict[str, Track] = {track.name: track for track in gd.get_tracks()}
-        name2start: Dict[str, int] = {
-            gbk.name: mr for gbk, mr in zip(self.gbk_list, self.min_ranges)
-        }
+        name2start: Dict[str, int] = {gbk.name: gbk.min_range for gbk in self.gbk_list}
         cross_links = []
         for align_coord in self.align_coords:
             cross_link = align_coord.get_cross_link(
