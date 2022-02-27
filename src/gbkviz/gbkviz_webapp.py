@@ -341,7 +341,10 @@ if upload_files:
         )
 else:
     # No Uploaded files, display toppage contents
-    tutorial_md_file = Path(__file__).parent / "toppage.md"
-    with open(tutorial_md_file) as f:
-        tutorial_content = f.read()
-    st.markdown(tutorial_content)
+    demo_gif_file = Path(__file__).parent / "gbkviz_demo.gif"
+    st.image(str(demo_gif_file.absolute()))
+
+    toppage_md_file = Path(__file__).parent / "toppage.md"
+    with open(toppage_md_file) as f:
+        toppage_contents = f.read()
+    st.markdown(toppage_contents)

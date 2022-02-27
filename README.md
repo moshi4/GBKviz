@@ -11,8 +11,9 @@
 GBKviz is a web-based Genbank data visualization tool developed with streamlit web framework.
 GBKviz allows user to easily and flexibly draw CDSs in specified genomic region.
 It also supports drawing genome comparison results by MUMmer.
+This software is developed under the strong inspiration of [EasyFig](https://mjsull.github.io/Easyfig/).
 
-Demo GIF here...
+![GBKviz Demo GIF](./src/gbkviz/gbkviz_demo.gif)
 
 ## Install
 
@@ -50,9 +51,10 @@ Launch GBKviz in web browser (<http://localhost:8501>):
 ### SideBar Widgets
 
 - `Load example genbank files` *Checkbox*
+- `Upload your genbank files` *File Uploader*
 - `Label` *Checkbox*
+- `Scale` *Checkbox*
 - `ScaleTicks` *Checkbox*
-- `TopOnly` *Checkbox*
 - `Feature Label Type` *Selectbox*
 - `Feature Symbol` *Selectbox*
 - `Label Angle` *Selectbox*
