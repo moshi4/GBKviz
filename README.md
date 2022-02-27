@@ -1,14 +1,14 @@
-[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io/moshi4/gbkviz/main/src/gbkviz/gbkviz_webapp.py)
 
 # GBKviz: Genbank Data Visualization WebApp
 
+[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io/moshi4/gbkviz/main/src/gbkviz/gbkviz_webapp.py)
 ![Python3](https://img.shields.io/badge/Language-Python3-steelblue)
 ![License](https://img.shields.io/badge/License-MIT-steelblue)
 [![Latest PyPI version](https://img.shields.io/pypi/v/gbkviz.svg)](https://pypi.python.org/pypi/gbkviz)  
 
 ## Overview
 
-GBKviz is a web-based Genbank data visualization tool developed with Streamlit web framework.
+GBKviz is a web-based Genbank data visualization tool developed with streamlit web framework.
 GBKviz allows user to easily and flexibly draw CDSs in specified genomic region.
 It also supports drawing genome comparison results by MUMmer.
 
@@ -50,18 +50,17 @@ Launch GBKviz in web browser (<http://localhost:8501>):
 ### SideBar Widgets
 
 - `Load example genbank files` *Checkbox*
-- `Download Figure Format` *Selectbox*
 - `Label` *Checkbox*
 - `ScaleTicks` *Checkbox*
 - `TopOnly` *Checkbox*
-- `Feature Label Types` *Selectbox*
+- `Feature Label Type` *Selectbox*
 - `Feature Symbol` *Selectbox*
 - `Label Angle` *Selectbox*
 - `ScaleTicks Interval` *Selectbox*
 - `Label Font Size` *Numberinput*
 - `ScaleTicks Font Size` *Numberinput*
-- `Fig Width` *Slider*
-- `Fig Track Height` *Slider*
+- `Fig Width(cm)` *Slider*
+- `Fig Track Height(cm)` *Slider*
 - `Fig Track Size` *Slider*
 - `Target Feature Types` *Multiselect*
 - `CDS` *Colorpicker*
