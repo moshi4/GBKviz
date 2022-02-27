@@ -40,6 +40,7 @@ class DrawGenbankFig:
             "tRNA": "#E80F0F",
             "misc_feature": "#E80FC6",
         },
+        cds_limit_num: int = 500,
     ):
         """DrawGenbankFig constructor
 
@@ -62,6 +63,7 @@ class DrawGenbankFig:
             inverted_cross_link_color (str, optional): Inverted cross link color
             target_feature_types (List[str], optional): Target feature types
             feature2color (Dict[str, str], optional): Feature colors dictionary
+            cds_limit_num (int, optional): CDS limit number to be drawn
         """
         self.gbk_list: List[Genbank] = gbk_list
         self.align_coords: List[AlignCoord] = align_coords
@@ -81,6 +83,7 @@ class DrawGenbankFig:
         self.inverted_cross_link_color: str = inverted_cross_link_color
         self.target_feature_types: List[str] = target_feature_types
         self.feature2color: Dict[str, str] = feature2color
+        self.cds_limit_num: int = cds_limit_num
 
         self.gd = self._setup_genome_diagram()
 
@@ -151,7 +154,10 @@ class DrawGenbankFig:
                 axis_labels=True,
             ).new_set()
 
-            for feature in gbk.extract_range_features(self.target_feature_types):
+            range_features = gbk.extract_range_features(self.target_feature_types)
+            for feature in range_features:
+                if len(range_features) > self.cds_limit_num:
+                    continue
                 # Make location fixed feature
                 feature = SeqFeature(
                     location=FeatureLocation(

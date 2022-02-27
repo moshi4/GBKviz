@@ -183,9 +183,9 @@ if upload_files:
     # Main Screen Widgets
     ###########################################################
     gbk_list: List[Genbank] = []
-    gbk_info_list: List[str] = []
 
     gbk_info_placeholder = st.empty()
+    warning_placeholder = st.empty()
     dl_btn_cols = st.columns([3, 3, 5])
     dl_png_btn_placeholder = dl_btn_cols[0].empty()
     dl_svg_btn_placeholder = dl_btn_cols[1].empty()
@@ -215,12 +215,11 @@ if upload_files:
                 key=gbk.name,
             )
             min_range = int(min_range)
-            default_max_range = gbk.full_length if gbk.full_length <= 100000 else 100000
             max_range = range_cols[1].number_input(
                 label="",
                 min_value=1,
                 max_value=gbk.full_length,
-                value=default_max_range,
+                value=gbk.full_length,
                 step=1000,
                 key=gbk.name,
             )
@@ -240,13 +239,29 @@ if upload_files:
             gbk.max_range = max_range
             gbk.reverse = True if reverse == "Yes" else False
 
-            gbk_info = (
-                f"{gbk.name} ({min_range:,} - {max_range:,} bp), "
-                + f"Length={int(max_range - min_range + 1):,} bp, "
-                + f"CDS={len(gbk.extract_range_features()):,}"
-            )
-            gbk_info_list.append(gbk_info)
             gbk_list.append(gbk)
+
+    # Show uploaded genbank file information
+    all_gbk_info = ""
+    for cnt, gbk in enumerate(gbk_list, 1):
+        all_gbk_info += (
+            f"Track{cnt:02d}: "
+            f"{gbk.name} ({gbk.min_range:,} - {gbk.max_range:,} bp), "
+            f"Length={gbk.range_length:,} bp, "
+            f"CDS={len(gbk.extract_range_features()):,}  \n"
+        )
+    gbk_info_placeholder.markdown(all_gbk_info)
+
+    # Show too many CDS warning
+    CDS_LIMIT = 1000
+    max_cds_count = max([len(gbk.extract_range_features()) for gbk in gbk_list])
+    if max_cds_count > CDS_LIMIT:
+        warning_msg = (
+            f"Genome with more than {CDS_LIMIT} CDSs are restricted to be drawn   \n"
+            "because drawing takes long time and cannot be viewed properly.  \n"
+            "Please adjust genome min-max range to reduce the number of CDS.  \n"
+        )
+        warning_placeholder.warning(warning_msg)
 
     # Genome alignment
     align_coords: List[AlignCoord] = []
@@ -274,12 +289,6 @@ if upload_files:
     for session_dir in gbkviz_tmpdir.iterdir():
         remove_olddir(session_dir)
 
-    # Uploaded genbank file information
-    all_gbk_info = ""
-    for cnt, gbk_info in enumerate(gbk_info_list, 1):
-        all_gbk_info += f"Track{cnt:02d}: {gbk_info}  \n"
-    gbk_info_placeholder.markdown(all_gbk_info)
-
     # Create visualization and comparison figure
     dgf = DrawGenbankFig(
         gbk_list=gbk_list,
@@ -300,6 +309,7 @@ if upload_files:
         inverted_cross_link_color=inverted_cross_link_color,
         target_feature_types=target_feature_types,
         feature2color=feature2color,
+        cds_limit_num=CDS_LIMIT,
     )
 
     # Show figure
