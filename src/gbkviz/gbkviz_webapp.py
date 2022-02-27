@@ -35,7 +35,7 @@ st.sidebar.markdown(repo_hyperlink)
 # Load example files or Upload files
 if st.sidebar.checkbox(label="Load example genbank files", value=False):
     genbank_dir = Path(__file__).parent / "genbank"
-    gbk_files = list(genbank_dir.glob("*.gbk"))
+    gbk_files = sorted(list(genbank_dir.glob("*.gbk")))
     upload_files = load_files(gbk_files)
 else:
     with st.sidebar.expander(label="Toggle Genbank Upload Box", expanded=True):
