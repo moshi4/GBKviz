@@ -1,4 +1,3 @@
-
 # GBKviz: Genbank Data Visualization WebApp
 
 [![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io/moshi4/gbkviz/main/src/gbkviz/gbkviz_webapp.py)
@@ -9,11 +8,13 @@
 ## Overview
 
 GBKviz is a web-based Genbank data visualization tool developed with streamlit web framework.
-GBKviz allows user to easily and flexibly draw CDSs in specified genomic region.
+GBKviz allows user to easily and flexibly draw CDSs in specified genomic region (PNG or SVG format is available).
 It also supports drawing genome comparison results by MUMmer.
 This software is developed under the strong inspiration of [EasyFig](https://mjsull.github.io/Easyfig/).
 
-![GBKviz Demo GIF](./src/gbkviz/gbkviz_demo.gif)
+![GBKviz Demo GIF](https://raw.githubusercontent.com/moshi4/GBKviz/main/src/gbkviz/gbkviz_demo.gif)  
+Click [here](https://share.streamlit.io/moshi4/gbkviz/main/src/gbkviz/gbkviz_webapp.py) to try GBKviz on Streamlit Cloud.  
+>:warning: Due to the limited resources in Streamlit Cloud, it may be unstable.  
 
 ## Install
 
@@ -46,29 +47,30 @@ Launch GBKviz in web browser (<http://localhost:8501>):
 
     gbkviz_webapp
 
-## Usage
+## Genome Comparison
 
-### SideBar Widgets
+In GBKviz, genome comparison of uploaded Genbank files is performed by MUMmer.  
+The following four genome comparison methods are available.
 
-- `Load example genbank files` *Checkbox*
-- `Upload your genbank files` *File Uploader*
-- `Label` *Checkbox*
-- `Scale` *Checkbox*
-- `ScaleTicks` *Checkbox*
-- `Feature Label Type` *Selectbox*
-- `Feature Symbol` *Selectbox*
-- `Label Angle` *Selectbox*
-- `ScaleTicks Interval` *Selectbox*
-- `Label Font Size` *Numberinput*
-- `ScaleTicks Font Size` *Numberinput*
-- `Fig Width(cm)` *Slider*
-- `Fig Track Height(cm)` *Slider*
-- `Fig Track Size` *Slider*
-- `Target Feature Types` *Multiselect*
-- `CDS` *Colorpicker*
-- `gene` *Colorpicker*
-- `tRNA` *Colorpicker*
-- `misc` *Colorpicker*
-- `Genome Comparison Type` *Selectbox*
-- `Cross Link (Normal)` *Colorpicker*
-- `Cross Link (Inverted)` *Colorpicker*
+- Nucleotide one-to-one
+- Nucleotide many-to-many
+- Protein one-to-one
+- Protein many-to-many
+
+*one-to-one*: Reciprocal best alignments between reference and query genomes  
+*many-to-many*: One-way best alignments between reference and query genomes  
+
+User can download and check genome comparison results file.  
+Genome comparison results file is in the following tsv format.  
+
+| Columns      | Contents                                            |
+| ------------ | --------------------------------------------------- |
+| REF_START    | Reference genome alignment start position           |
+| REF_END      | Reference genome alignment end position             |
+| QUERY_START  | Query genome alignment start position               |
+| QUERY_END    | Query genome alignment end position                 |
+| REF_LENGTH   | Reference genome alignment length                   |
+| QUERY_LENGTH | Query genome alignment length                       |
+| IDENTITY     | Reference and query genome alignment identity (%)   |
+| REF_NAME     | Reference genome name tag                           |
+| QUERY_NAME   | Query genome name tag                               |
