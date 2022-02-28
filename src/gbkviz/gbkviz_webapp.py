@@ -5,11 +5,11 @@ import streamlit as st
 from streamlit.delta_generator import DeltaGenerator
 from streamlit.uploaded_file_manager import UploadedFile
 
+from gbkviz import util
 from gbkviz.align_coord import AlignCoord
 from gbkviz.draw_genbank_fig import DrawGenbankFig
 from gbkviz.genbank import Genbank
 from gbkviz.genome_align import GenomeAlign
-from gbkviz.util import load_files, make_session_dir, remove_olddir
 
 # Page basic configuration
 st.set_page_config(
@@ -36,7 +36,7 @@ st.sidebar.markdown(repo_hyperlink)
 if st.sidebar.checkbox(label="Load example genbank files", value=False):
     genbank_dir = Path(__file__).parent / "genbank"
     gbk_files = sorted(list(genbank_dir.glob("*.gbk")))
-    upload_files = load_files(gbk_files)
+    upload_files = util.load_files(gbk_files)
 else:
     with st.sidebar.expander(label="Toggle Genbank Upload Box", expanded=True):
         # Genbank files upload widgets
@@ -202,7 +202,7 @@ if upload_files:
         range_cols = st.columns([3, 3, 1])
 
         for upload_gbk_file in upload_files:
-            gbk = Genbank.read_upload_gbk_file(upload_gbk_file)
+            gbk = util.read_upload_gbk_file(upload_gbk_file)
 
             # Min-Max range input widget
             range_label = f"{gbk.name} (Max={gbk.full_length:,} bp)"
@@ -269,7 +269,7 @@ if upload_files:
     gbkviz_tmpdir.mkdir(exist_ok=True)
     if genome_comparison is not None:
         genome_fasta_files: List[Path] = []
-        gbkviz_session_tmpdir = make_session_dir(gbkviz_tmpdir)
+        gbkviz_session_tmpdir = util.make_session_dir(gbkviz_tmpdir)
         for gbk in gbk_list:
             # Make genome fasta file
             suffix = "_reverse.fa" if gbk.reverse else ".fa"
@@ -287,7 +287,7 @@ if upload_files:
 
     # Remove old genome comparison result directory
     for session_dir in gbkviz_tmpdir.iterdir():
-        remove_olddir(session_dir)
+        util.remove_olddir(session_dir)
 
     # Create visualization and comparison figure
     dgf = DrawGenbankFig(

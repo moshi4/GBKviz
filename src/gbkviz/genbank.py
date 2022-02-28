@@ -4,11 +4,9 @@ from io import StringIO
 from pathlib import Path
 from typing import List, Optional, Union
 
-import streamlit as st
 from Bio import SeqIO
 from Bio.SeqFeature import SeqFeature
 from Bio.SeqRecord import SeqRecord
-from streamlit.uploaded_file_manager import UploadedFile
 
 
 class Genbank:
@@ -110,19 +108,3 @@ class Genbank:
             write_seq = self.record.seq
         with open(outfile, "w") as f:
             f.write(f">{self.name}\n{write_seq}\n")
-
-    @staticmethod
-    @st.cache(allow_output_mutation=True, ttl=3600)
-    def read_upload_gbk_file(upload_gbk_file: UploadedFile) -> Genbank:
-        """Read uploaded genbank file from Streamlit app
-
-        Args:
-            upload_gbk_file (UploadedFile): Uploaded genbank file
-
-        Returns:
-            Genbank: Genbank class object
-        """
-        return Genbank(
-            gbk_file=StringIO(upload_gbk_file.getvalue().decode("utf-8")),
-            name=Path(upload_gbk_file.name).stem,
-        )
