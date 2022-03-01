@@ -122,8 +122,9 @@ class DrawGenbankFig:
         Args:
             outfile (Union[str, Path]): Output file path
         """
-        format = Path(outfile).suffix.replace(".", "")
-        self.gd.write(outfile, format)
+        outfile = Path(outfile)
+        format = outfile.suffix.replace(".", "")
+        self.gd.write(str(outfile), format)
 
     def _setup_genome_diagram(self) -> GenomeDiagram.Diagram:
         # Create GenomeDiagram.Diagram object
@@ -159,42 +160,44 @@ class DrawGenbankFig:
                 continue
 
             for feature in range_features:
-                # Make location fixed feature
-                feature = SeqFeature(
-                    location=FeatureLocation(
-                        feature.location.start - gbk.min_range + 1,
-                        feature.location.end - gbk.min_range + 1,
-                        feature.strand,
-                    ),
-                    type=feature.type,
-                    qualifiers=feature.qualifiers,
-                )
-
-                # Get draw feature 'label_name', 'feature_color', 'label_angle'
-                if self.label_type in ("gene", "protein_id", "locus_tag", "product"):
-                    label_name = feature.qualifiers.get(self.label_type, [""])[0]
-                    color = self.feature2color[feature.type]
-                else:
-                    raise ValueError(
-                        f"Invalid label type `{self.label_type}` detected!!"
+                start, end = feature.location.start, feature.location.end
+                if isinstance(start, int) and isinstance(end, int):
+                    # Make location fixed feature
+                    start, end = start - gbk.min_range + 1, end - gbk.min_range + 1
+                    feature = SeqFeature(
+                        location=FeatureLocation(start, end, feature.strand),
+                        type=feature.type,
+                        qualifiers=feature.qualifiers,
                     )
-                strand_label_angle = (
-                    180 - self.label_angle if feature.strand == -1 else self.label_angle
-                )
 
-                # Add feature to genbank track
-                gd_feature_set.add_feature(
-                    feature=feature,
-                    color=color,
-                    name=label_name,
-                    label=self.show_label,
-                    label_size=self.label_fsize,
-                    label_angle=strand_label_angle,
-                    label_position="middle",  # "start", "middle", "end"
-                    sigil=self.feature_symbol,  # "BOX", "ARROW", "OCTO", "BIGARROW"
-                    arrowhead_length=0.5,  # Default: 0.5
-                    arrowshaft_height=0.3,
-                )
+                    # Get draw feature 'label_name', 'feature_color', 'label_angle'
+                    target_label_types = ("gene", "protein_id", "locus_tag", "product")
+                    if self.label_type in target_label_types:
+                        label_name = feature.qualifiers.get(self.label_type, [""])[0]
+                        color = self.feature2color[feature.type]
+                    else:
+                        error_msg = f"Invalid label type `{self.label_type}` detected!!"
+                        raise ValueError(error_msg)
+
+                    # Define label angle by strand
+                    if feature.strand == -1:
+                        label_angle = 180 - self.label_angle
+                    else:
+                        label_angle = self.label_angle
+
+                    # Add feature to genbank track
+                    gd_feature_set.add_feature(
+                        feature=feature,
+                        color=color,
+                        name=label_name,
+                        label=self.show_label,
+                        label_size=self.label_fsize,
+                        label_angle=label_angle,
+                        label_position="middle",  # "start", "middle", "end"
+                        sigil=self.feature_symbol,  # "BOX", "ARROW", "OCTO", "BIGARROW"
+                        arrowhead_length=0.5,  # Default: 0.5
+                        arrowshaft_height=0.3,
+                    )
 
         # Get cross links
         cross_links = []

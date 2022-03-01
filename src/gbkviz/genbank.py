@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from io import StringIO
 from pathlib import Path
 from typing import List, Optional, Union
@@ -81,13 +79,13 @@ class Genbank:
         """
         range_features = []
         for feature in self.extract_all_features(feature_types):
-            min_feature_loc = int(min(feature.location.start, feature.location.end))
-            max_feature_loc = int(max(feature.location.start, feature.location.end))
-            if (
-                self.min_range <= min_feature_loc <= self.max_range
-                or self.min_range <= max_feature_loc <= self.max_range
-            ):
-                range_features.append(feature)
+            start, end = feature.location.start, feature.location.end
+            if isinstance(start, int) and isinstance(end, int):
+                if (
+                    self.min_range <= start <= self.max_range
+                    or self.min_range <= end <= self.max_range
+                ):
+                    range_features.append(feature)
 
         return range_features
 

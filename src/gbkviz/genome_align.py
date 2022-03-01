@@ -15,7 +15,7 @@ class GenomeAlign:
 
     def __init__(
         self,
-        genome_fasta_files: List[Union[str, Path]],
+        genome_fasta_files: List[Path],
         outdir: Union[str, Path],
         seqtype: str = "nucleotide",
         maptype: str = "one-to-one",
