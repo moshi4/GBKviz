@@ -3,7 +3,7 @@ from __future__ import annotations
 import csv
 from dataclasses import astuple, dataclass
 from pathlib import Path
-from typing import Dict, List, Union
+from typing import List, Union
 
 from Bio.Graphics.GenomeDiagram import CrossLink, Track
 from reportlab.lib import colors
@@ -26,14 +26,14 @@ class AlignCoord:
 
     def get_cross_link(
         self,
-        name2track: Dict[str, Track],
+        tracks: List[Track],
         normal_color: str = "#0000FF",  # Blue
         inverted_color: str = "#FF0000",  # Red
     ) -> CrossLink:
         """Get cross link object for genome comparison visualization
 
         Args:
-            name2track (Dict[str, Track]): Name and Track dictionary
+            tracks (List[Track]): GenomeDiagram Track list
             normal_color (str): Normal cross link hexcolor (Default='#0000FF'[Blue])
             inverted_color (str): Inverted cross link hexcolor (Default='#FF0000'[Red])
 
@@ -62,6 +62,7 @@ class AlignCoord:
             colors.white, cross_link_color, 0, 100, self.identity
         )
 
+        name2track = {track.name: track for track in tracks}
         return CrossLink(
             featureA=(name2track[self.ref_name], ref_start, ref_end),
             featureB=(name2track[self.query_name], query_start, query_end),

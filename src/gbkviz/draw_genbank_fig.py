@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import Dict, List, Tuple, Union
 
 from Bio.Graphics import GenomeDiagram
-from Bio.Graphics.GenomeDiagram import FeatureSet, Track
+from Bio.Graphics.GenomeDiagram import FeatureSet
 from Bio.SeqFeature import FeatureLocation, SeqFeature
 from reportlab.lib import colors
 from reportlab.lib.units import cm
@@ -197,11 +197,10 @@ class DrawGenbankFig:
                 )
 
         # Get cross links
-        name2track: Dict[str, Track] = {track.name: track for track in gd.get_tracks()}
         cross_links = []
         for align_coord in self.align_coords:
             cross_link = align_coord.get_cross_link(
-                name2track=name2track,
+                tracks=gd.get_tracks(),
                 normal_color=self.cross_link_color,
                 inverted_color=self.inverted_cross_link_color,
             )
