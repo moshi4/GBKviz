@@ -155,9 +155,10 @@ class DrawGenbankFig:
             ).new_set()
 
             range_features = gbk.extract_range_features(self.target_feature_types)
+            if len(range_features) > self.cds_limit_num:
+                continue
+
             for feature in range_features:
-                if len(range_features) > self.cds_limit_num:
-                    continue
                 # Make location fixed feature
                 feature = SeqFeature(
                     location=FeatureLocation(
