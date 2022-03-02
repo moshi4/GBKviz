@@ -170,6 +170,9 @@ if upload_files:
                 "Protein Many-to-Many",
             ],
             index=0,
+            help="[MUMmer](https://github.com/mummer4/mummer) "
+            "is used as genome comparison tool.  \n"
+            "User specified min-max genomic regions are compared.",
         )
 
         # Genome comparison colorpicker widgets
