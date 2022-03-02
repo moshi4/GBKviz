@@ -91,6 +91,8 @@ class DrawGenbankFig:
 
         if self.fig_align_type == "center":
             self.align_coords = self._add_align_coords_offset()
+            # Center alignment figure cannot display scaleticks properly
+            self.show_ticks = False
 
         self.gd = self._setup_genome_diagram()
 
