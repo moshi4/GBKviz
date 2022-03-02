@@ -49,7 +49,7 @@ else:
 
 if upload_files:
     # Visibility control checkbox widgets
-    check_cols = List[DeltaGenerator]
+    check_cols: List[DeltaGenerator]
     check_cols = st.sidebar.columns(3)
     show_label = check_cols[0].checkbox("Label", False)
     show_scale = check_cols[1].checkbox("Scale", True)
@@ -107,7 +107,7 @@ if upload_files:
     )
 
     # Figure "Width", "TrackHeight", "TrackSizeRatio" control slider widgets
-    slider_cols = List[DeltaGenerator]
+    slider_cols: List[DeltaGenerator]
     slider_cols = st.sidebar.columns(2)
     fig_width = slider_cols[0].slider(
         label="Fig Width(cm)",
