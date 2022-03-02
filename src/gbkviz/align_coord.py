@@ -81,6 +81,28 @@ class AlignCoord:
         """TSV format text"""
         return "\t".join([str(v) for v in astuple(self)])
 
+    def add_offset(self, ref_offset: int, query_offset: int) -> AlignCoord:
+        """Add offset to start-end position
+
+        Args:
+            ref_offset (int): Offset for reference genome
+            query_offset (int): Offset for query genome
+
+        Returns:
+            AlignCoord: AlignCoord with offset
+        """
+        return AlignCoord(
+            self.ref_start + ref_offset,
+            self.ref_end + ref_offset,
+            self.query_start + query_offset,
+            self.query_end + query_offset,
+            self.ref_length,
+            self.query_length,
+            self.identity,
+            self.ref_name,
+            self.query_name,
+        )
+
     @staticmethod
     def parse(
         coords_tsv_file: Union[str, Path],

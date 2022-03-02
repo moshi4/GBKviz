@@ -1,3 +1,4 @@
+from collections import defaultdict
 from io import StringIO
 from pathlib import Path
 from typing import Dict, List, Tuple, Union
@@ -31,6 +32,7 @@ class DrawGenbankFig:
         fig_width: int = 25,
         fig_track_height: int = 3,
         fig_track_size: float = 0.5,
+        fig_align_type: str = "Left",
         cross_link_color: str = "#0000FF",
         inverted_cross_link_color: str = "#FF0000",
         target_feature_types: List[str] = ["CDS"],
@@ -59,6 +61,7 @@ class DrawGenbankFig:
             fig_width (int, optional): Figure width (cm)
             fig_track_height (int, optional): Figure track height (cm)
             fig_track_size (float, optional): Figure track size
+            fig_align_type (str, optional): 'Left' or 'Center'
             cross_link_color (str, optional): Cross link color
             inverted_cross_link_color (str, optional): Inverted cross link color
             target_feature_types (List[str], optional): Target feature types
@@ -79,11 +82,15 @@ class DrawGenbankFig:
         self.fig_width: int = fig_width
         self.fig_track_height: int = fig_track_height
         self.fig_track_size: float = fig_track_size
+        self.fig_align_type: str = fig_align_type.lower()
         self.cross_link_color: str = cross_link_color
         self.inverted_cross_link_color: str = inverted_cross_link_color
         self.target_feature_types: List[str] = target_feature_types
         self.feature2color: Dict[str, str] = feature2color
         self.cds_limit_num: int = cds_limit_num
+
+        if self.fig_align_type == "center":
+            self.align_coords = self._add_align_coords_offset()
 
         self.gd = self._setup_genome_diagram()
 
@@ -126,11 +133,44 @@ class DrawGenbankFig:
         format = outfile.suffix.replace(".", "")
         self.gd.write(str(outfile), format)
 
+    def _get_track_offset(self, gbk: Genbank) -> int:
+        """Get track offset for figure alignment
+
+        Args:
+            gbk (Genbank): Genbank object
+
+        Returns:
+            int: Track offset
+        """
+        if self.fig_align_type == "center":
+            return int((self.max_range_length - gbk.range_length) / 2)
+        else:
+            return 0
+
+    def _add_align_coords_offset(self) -> List[AlignCoord]:
+        """Add offset to align coords for figure center alignment
+
+        Returns:
+            List[AlignCoord]: Align coords with offset
+        """
+        name2offset: Dict[str, int] = defaultdict(int)
+        for gbk in self.gbk_list:
+            adjusted_pos = self._get_track_offset(gbk)
+            name2offset[gbk.name] = adjusted_pos
+
+        offset_align_coords = []
+        for ac in self.align_coords:
+            offset_align_coords.append(
+                ac.add_offset(name2offset[ac.ref_name], name2offset[ac.query_name])
+            )
+        return offset_align_coords
+
     def _setup_genome_diagram(self) -> GenomeDiagram.Diagram:
         # Create GenomeDiagram.Diagram object
         gd = GenomeDiagram.Diagram("Genbank Genome Diagram")
 
         for gbk in self.gbk_list:
+            offset = self._get_track_offset(gbk)
             # Add track of one genbank
             gd_feature_set: FeatureSet = gd.new_track(
                 track_level=0,
@@ -138,8 +178,8 @@ class DrawGenbankFig:
                 greytrack=False,  # Disable greytrack
                 greytrack_labels=0,
                 greytrack_fontcolor=colors.black,
-                start=0,
-                end=gbk.range_length,
+                start=offset,
+                end=gbk.range_length + offset,
                 scale=self.show_scale,
                 scale_fontsize=self.scaleticks_fsize,
                 scale_fontangle=0,
@@ -163,7 +203,8 @@ class DrawGenbankFig:
                 start, end = feature.location.start, feature.location.end
                 if isinstance(start, int) and isinstance(end, int):
                     # Make location fixed feature
-                    start, end = start - gbk.min_range + 1, end - gbk.min_range + 1
+                    start = (start - gbk.min_range + 1) + offset
+                    end = (end - gbk.min_range + 1) + offset
                     feature = SeqFeature(
                         location=FeatureLocation(start, end, feature.strand),
                         type=feature.type,

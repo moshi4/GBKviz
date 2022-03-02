@@ -130,6 +130,9 @@ if upload_files:
         value=0.5,
         step=0.1,
     )
+    fig_align_type = slider_cols[1].radio(
+        label="Fig Align Type", options=["Left", "Center"], index=0
+    )
 
     # Target feature types widget
     target_feature_types = st.sidebar.multiselect(
@@ -305,6 +308,7 @@ if upload_files:
         fig_width=fig_width,
         fig_track_height=fig_track_height,
         fig_track_size=fig_track_size,
+        fig_align_type=fig_align_type,
         cross_link_color=cross_link_color,
         inverted_cross_link_color=inverted_cross_link_color,
         target_feature_types=target_feature_types,
