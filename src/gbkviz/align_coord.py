@@ -58,8 +58,10 @@ class AlignCoord:
             cross_link_color = HexColor(normal_color)
 
         # Get gradient color from alignment sequence identity[%]
+        upper_limit = 100
+        lower_limit = 20 if self.identity > 20 else self.identity
         gradient_cross_link_color = colors.linearlyInterpolatedColor(
-            colors.white, cross_link_color, 0, 100, self.identity
+            colors.white, cross_link_color, lower_limit, upper_limit, self.identity
         )
 
         name2track = {track.name: track for track in tracks}
