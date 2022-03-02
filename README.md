@@ -49,16 +49,13 @@ Launch GBKviz in web browser (<http://localhost:8501>):
 
 ## Genome Comparison
 
-In GBKviz, genome comparison of uploaded Genbank files is performed by MUMmer.  
-The following four genome comparison methods are available.
+In GBKviz, [MUMmer](https://github.com/mummer4/mummer) is used as genome comparison tool.  
+Following four genome comparison methods are available.
 
-- Nucleotide one-to-one
-- Nucleotide many-to-many
-- Protein one-to-one
-- Protein many-to-many
-
-*one-to-one*: Reciprocal best alignments between reference and query genomes  
-*many-to-many*: One-way best alignments between reference and query genomes  
+- Nucleotide One-to-One Mapping
+- Nucleotide Many-to-Many Mapping
+- Protein One-to-One Mapping
+- Protein Many-to-Many Mapping
 
 User can download and check genome comparison results file.  
 Genome comparison results file is in the following tsv format.  
