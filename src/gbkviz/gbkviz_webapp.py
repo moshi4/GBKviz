@@ -49,15 +49,13 @@ else:
 
 if upload_files:
     # Visibility control checkbox widgets
-    check_cols: List[DeltaGenerator]
-    check_cols = st.sidebar.columns(3)
+    check_cols: List[DeltaGenerator] = st.sidebar.columns(3)
     show_label = check_cols[0].checkbox("Label", False)
     show_scale = check_cols[1].checkbox("Scale", True)
     show_ticks = check_cols[2].checkbox("ScaleTicks", False)
 
     # Figure appearence control widgets
-    fig_appearence_cols: List[DeltaGenerator]
-    fig_appearence_cols = st.sidebar.columns(2)
+    fig_appearence_cols: List[DeltaGenerator] = st.sidebar.columns(2)
     label_type = fig_appearence_cols[0].selectbox(
         label="Feature Label Type",
         options=["gene", "protein_id", "locus_tag", "product"],
@@ -107,30 +105,29 @@ if upload_files:
     )
 
     # Figure "Width", "TrackHeight", "TrackSizeRatio" control slider widgets
-    slider_cols: List[DeltaGenerator]
-    slider_cols = st.sidebar.columns(2)
-    fig_width = slider_cols[0].slider(
+    fig_param_cols: List[DeltaGenerator] = st.sidebar.columns(2)
+    fig_width = fig_param_cols[0].slider(
         label="Fig Width(cm)",
         min_value=10,
         max_value=100,
         value=25,
         step=5,
     )
-    fig_track_height = slider_cols[1].slider(
+    fig_track_height = fig_param_cols[1].slider(
         label="Fig Track Height(cm)",
         min_value=1,
         max_value=10,
         value=3,
         step=1,
     )
-    fig_track_size = slider_cols[0].slider(
+    fig_track_size = fig_param_cols[0].slider(
         label="Fig Track Size",
         min_value=0.1,
         max_value=1.0,
         value=0.5,
         step=0.1,
     )
-    fig_align_type = slider_cols[1].radio(
+    fig_align_type = fig_param_cols[1].radio(
         label="Fig Align Type", options=["Left", "Center"], index=0
     )
 
@@ -142,8 +139,7 @@ if upload_files:
     )
 
     # Features colorpicker widgets
-    color_cols: List[DeltaGenerator]
-    color_cols = st.sidebar.columns(4)
+    color_cols: List[DeltaGenerator] = st.sidebar.columns(4)
     cds_color = color_cols[0].color_picker(label="CDS", value="#FFA500")
     gene_color = color_cols[1].color_picker(label="gene", value="#0FE8E4")
     trna_color = color_cols[2].color_picker(label="tRNA", value="#E80F0F")
@@ -176,8 +172,7 @@ if upload_files:
         )
 
         # Genome comparison colorpicker widgets
-        cross_link_color_cols: List[DeltaGenerator]
-        cross_link_color_cols = st.sidebar.columns(2)
+        cross_link_color_cols: List[DeltaGenerator] = st.sidebar.columns(2)
         cross_link_color = cross_link_color_cols[0].color_picker(
             label="Cross Link (Normal)", value="#0000FF"
         )
@@ -190,13 +185,13 @@ if upload_files:
     ###########################################################
     gbk_list: List[Genbank] = []
 
-    gbk_info_placeholder = st.empty()
-    warning_placeholder = st.empty()
-    dl_btn_cols = st.columns([3, 3, 5])
-    dl_png_btn_placeholder = dl_btn_cols[0].empty()
-    dl_svg_btn_placeholder = dl_btn_cols[1].empty()
-    dl_align_coords_btn_placeholder = dl_btn_cols[2].empty()
-    fig_placeholder = st.empty()
+    gbk_info_placeholder: DeltaGenerator = st.empty()
+    warning_placeholder: DeltaGenerator = st.empty()
+    dl_btn_cols: List[DeltaGenerator] = st.columns([3, 3, 5])
+    dl_png_btn_placeholder: DeltaGenerator = dl_btn_cols[0].empty()
+    dl_svg_btn_placeholder: DeltaGenerator = dl_btn_cols[1].empty()
+    dl_align_coords_btn_placeholder: DeltaGenerator = dl_btn_cols[2].empty()
+    fig_placeholder: DeltaGenerator = st.empty()
 
     with st.form(key="form"):
 
@@ -204,8 +199,7 @@ if upload_files:
 
         st.markdown("**Display Genome Min-Max Range & Reverse Option**")
 
-        range_cols: List[DeltaGenerator]
-        range_cols = st.columns([3, 3, 1])
+        range_cols: List[DeltaGenerator] = st.columns([3, 3, 1])
 
         for upload_gbk_file in upload_files:
             gbk = util.read_upload_gbk_file(upload_gbk_file)
