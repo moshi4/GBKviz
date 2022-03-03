@@ -5,10 +5,17 @@
 ![License](https://img.shields.io/badge/License-MIT-steelblue)
 [![Latest PyPI version](https://img.shields.io/pypi/v/gbkviz.svg)](https://pypi.python.org/pypi/gbkviz)  
 
+## Table of contents
+
+- [Overview](#overview)
+- [Install](#install)
+- [Command Usage](#command-usage)
+- [Genome Comparison](#genome-comparison)
+
 ## Overview
 
-GBKviz is a web-based Genbank data visualization tool developed with streamlit web framework.
-GBKviz allows user to easily and flexibly draw CDSs in specified genomic region (PNG or SVG format is available).
+GBKviz is a web-based Genbank data visualization and comparison tool developed with streamlit web framework.
+GBKviz allows user to easily and flexibly draw CDSs in user-specified genomic region (PNG or SVG format is available).
 It also supports drawing genome comparison results by MUMmer.
 This software is developed under the strong inspiration of [EasyFig](https://mjsull.github.io/Easyfig/).
 
@@ -33,7 +40,7 @@ Install MUMmer with apt command (Ubuntu):
 ### Dependencies
 
 - [Streamlit](https://streamlit.io/)  
-  Web framework for quick development
+  Simple web framework for data analysis
 
 - [BioPython](https://github.com/biopython/biopython)  
   Utility tools for computational molecular biology
