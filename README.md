@@ -5,15 +5,6 @@
 ![License](https://img.shields.io/badge/License-MIT-steelblue)
 [![Latest PyPI version](https://img.shields.io/pypi/v/gbkviz.svg)](https://pypi.python.org/pypi/gbkviz)  
 
-## Table of contents
-
-- [Overview](#overview)
-- [Installation](#installation)
-- [Dependencies](#dependencies)
-- [Command Usage](#command-usage)
-- [Example](#example)
-- [Genome Comparison](#genome-comparison)
-
 ## Overview
 
 GBKviz is a web-based Genbank data visualization and comparison tool developed with streamlit web framework.
