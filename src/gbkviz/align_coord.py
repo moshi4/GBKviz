@@ -151,3 +151,26 @@ class AlignCoord:
                 align_coords.append(AlignCoord(*typed_row))
 
         return align_coords
+
+    @staticmethod
+    def filter(
+        align_coords: List[AlignCoord],
+        min_length: int = 0,
+        min_identity: float = 0.0,
+    ) -> List[AlignCoord]:
+        """Filter align coord list with Length & Identity
+
+        Args:
+            align_coords (List[AlignCoord]): AlignCoord list
+            min_length (int, optional): Min length to filter
+            min_identity (float, optional): Min identity to filter
+
+        Returns:
+            List[AlignCoord]: Filtered AlignCoord list
+        """
+        filtered_align_coords: List[AlignCoord] = []
+        for ac in align_coords:
+            rlen, qlen, ident = ac.ref_length, ac.query_length, ac.identity
+            if (rlen >= min_length and qlen >= min_length) and ident >= min_identity:
+                filtered_align_coords.append(AlignCoord(*astuple(ac)))
+        return filtered_align_coords

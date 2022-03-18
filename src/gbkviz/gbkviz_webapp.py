@@ -152,8 +152,8 @@ if upload_files:
     }
 
     genome_comparison = None
-    cross_link_color = ""
-    inverted_cross_link_color = ""
+    cross_link_color, inverted_cross_link_color = "", ""
+    min_length, min_identity = 0, 0
     if len(upload_files) >= 2 and GenomeAlign.check_requirements():
         # Genome comparison type selectbox widget
         genome_comparison = st.sidebar.selectbox(
@@ -170,6 +170,27 @@ if upload_files:
             "is used as genome comparison tool.  \n"
             "User specified min-max genomic regions are compared.",
         )
+
+        # Genome comparison filter parameters
+        min_hit_cols: List[DeltaGenerator] = st.sidebar.columns(2)
+        min_length = min_hit_cols[0].number_input(
+            label="Min Length (Kbp)",
+            min_value=0.0,
+            value=0.0,
+            step=0.1,
+            format="%.1f",
+            help="Minimum length of MUMmer comparison results to be drawn.",
+        )
+        min_length = int(min_length * 1000)
+        min_identity = min_hit_cols[1].number_input(
+            label=" Min Identity (%)",
+            min_value=0,
+            max_value=100,
+            value=0,
+            step=5,
+            help="Minimum identity of MUMmer comparison results to be drawn.",
+        )
+        min_identity = int(min_identity)
 
         # Genome comparison colorpicker widgets
         cross_link_color_cols: List[DeltaGenerator] = st.sidebar.columns(2)
@@ -284,6 +305,7 @@ if upload_files:
             genome_fasta_files, gbkviz_session_tmpdir, seqtype, maptype
         )
         align_coords = genome_align.run()
+        align_coords = AlignCoord.filter(align_coords, min_length, min_identity)
 
     # Remove old genome comparison result directory
     for session_dir in gbkviz_tmpdir.iterdir():
