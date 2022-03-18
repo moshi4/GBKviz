@@ -1,6 +1,6 @@
 FROM python:3.9-slim
 
-ENV GBKVIZ_VERSION=1.0.0
+ENV GBKVIZ_VERSION=1.1.0
 
 # Install MUMmer
 RUN apt-get update && \
