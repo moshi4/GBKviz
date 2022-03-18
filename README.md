@@ -10,7 +10,7 @@
 GBKviz is a web-based Genbank data visualization and comparison tool developed with streamlit web framework.
 GBKviz allows user to easily and flexibly draw CDSs in user-specified genomic region (PNG or SVG format is available).
 It also supports drawing genome comparison results by MUMmer.
-GenomeDiagram, a part of BioPython functionality, is used to draw the diagram.
+GenomeDiagram, a part of BioPython module, is used to draw the diagram.
 This software is developed under the strong inspiration of [EasyFig](https://mjsull.github.io/Easyfig/).
 
 ![GBKviz Demo GIF](https://raw.githubusercontent.com/moshi4/GBKviz/main/src/gbkviz/gbkviz_demo.gif)  
@@ -31,7 +31,7 @@ Install MUMmer with apt command (Ubuntu):
 
     sudo apt install mummer
 
-Also, GBKviz can be installed with Docker:
+GKBviz can also be available with Docker:
 
     docker pull moshi4/gbkviz:latest
     docker run -d -p 8501:8501 moshi4/gbkviz:latest
@@ -53,7 +53,7 @@ Launch GBKviz in web browser (<http://localhost:8501>):
 
     gbkviz_webapp
   
-If you use Docker for installation, above command is already launched.
+If you are using Docker to start, above command is already executed.
 
 ## Example
 
@@ -64,6 +64,12 @@ Fig.1: 4 phage whole genomes comparison result
 
 ![GBKviz Example Fig2](https://raw.githubusercontent.com/moshi4/GBKviz/main/image/gbkviz_example2.png)  
 Fig.2: 4 E.coli partial genomes comparison result
+
+![GBKviz Example Fig3](https://raw.githubusercontent.com/moshi4/GBKviz/main/image/gbkviz_example3.png)  
+Fig.3: 4 E.coli whole genomes comparison result
+
+![GBKviz Example Fig4](https://raw.githubusercontent.com/moshi4/GBKviz/main/image/gbkviz_example4.png)  
+Fig.4: Simple CDS visualization with gene label
 
 ## Genome Comparison
 
