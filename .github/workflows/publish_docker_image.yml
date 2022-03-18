@@ -21,6 +21,7 @@ jobs:
         uses: docker/metadata-action@v3
         with:
           images: moshi4/gbkviz
+          tags: type=semver,pattern={{version}}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v2
