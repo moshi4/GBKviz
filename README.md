@@ -31,7 +31,7 @@ Install MUMmer with apt command (Ubuntu):
 
     sudo apt install mummer
 
-GKBviz can also be available with Docker:
+GBKviz can also be available with Docker:
 
     docker pull moshi4/gbkviz:latest
     docker run -d -p 8501:8501 moshi4/gbkviz:latest
