@@ -42,7 +42,7 @@ class DrawGenbankFig:
             "tRNA": "#E80F0F",
             "misc_feature": "#E80FC6",
         },
-        cds_limit_num: int = 500,
+        max_feature: int = 1000,
     ):
         """DrawGenbankFig constructor
 
@@ -66,7 +66,7 @@ class DrawGenbankFig:
             inverted_cross_link_color (str, optional): Inverted cross link color
             target_feature_types (List[str], optional): Target feature types
             feature2color (Dict[str, str], optional): Feature colors dictionary
-            cds_limit_num (int, optional): CDS limit number to be drawn
+            max_feature (int, optional): Max feature number to be drawn
         """
         self.gbk_list: List[Genbank] = gbk_list
         self.align_coords: List[AlignCoord] = align_coords
@@ -87,7 +87,7 @@ class DrawGenbankFig:
         self.inverted_cross_link_color: str = inverted_cross_link_color
         self.target_feature_types: List[str] = target_feature_types
         self.feature2color: Dict[str, str] = feature2color
-        self.cds_limit_num: int = cds_limit_num
+        self.max_feature: int = max_feature
 
         if self.fig_align_type == "center":
             self.align_coords = self._add_align_coords_offset()
@@ -100,6 +100,14 @@ class DrawGenbankFig:
     def max_range_length(self) -> int:
         """Max range length"""
         return max(gbk.range_length for gbk in self.gbk_list)
+
+    @property
+    def max_range_feature(self) -> int:
+        """Max feature count"""
+        return max(
+            len(gbk.extract_range_features(self.target_feature_types))
+            for gbk in self.gbk_list
+        )
 
     @property
     def draw_pagesize(self) -> Tuple[float, float]:
@@ -198,12 +206,18 @@ class DrawGenbankFig:
             ).new_set()
 
             range_features = gbk.extract_range_features(self.target_feature_types)
-            if len(range_features) > self.cds_limit_num:
-                continue
+            max_range_feature = self.max_range_feature
 
             for feature in range_features:
                 start, end = feature.location.start, feature.location.end
                 if isinstance(start, int) and isinstance(end, int):
+                    # Filtering feature to be drawn
+                    feature_length = end - start + 1
+                    if (
+                        max_range_feature > self.max_feature
+                        and feature_length < self.max_range_length / 2000
+                    ):
+                        continue
                     # Make location fixed feature
                     start = (start - gbk.min_range + 1) + offset
                     end = (end - gbk.min_range + 1) + offset

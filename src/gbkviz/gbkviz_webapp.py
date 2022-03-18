@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 
 import streamlit as st
 from streamlit.delta_generator import DeltaGenerator
@@ -40,7 +40,7 @@ if st.sidebar.checkbox(label="Load example genbank files", value=False):
 else:
     with st.sidebar.expander(label="Toggle Genbank Upload Box", expanded=True):
         # Genbank files upload widgets
-        upload_files: List[UploadedFile]
+        upload_files: Optional[List[UploadedFile]]
         upload_files = st.file_uploader(
             label="Upload your genbank files (*.gb|*.gbk)",
             type=["gb", "gbk"],
@@ -274,13 +274,14 @@ if upload_files:
     gbk_info_placeholder.markdown(all_gbk_info)
 
     # Show too many CDS warning
-    CDS_LIMIT = 1000
-    max_cds_count = max([len(gbk.extract_range_features()) for gbk in gbk_list])
-    if max_cds_count > CDS_LIMIT:
+    MAX_FEATURE = 1000
+    max_feature_count = max(
+        [len(gbk.extract_range_features(target_feature_types)) for gbk in gbk_list]
+    )
+    if max_feature_count > MAX_FEATURE:
         warning_msg = (
-            f"Genome with more than {CDS_LIMIT} CDSs are restricted to be drawn   \n"
-            "because drawing takes long time and cannot be viewed properly.  \n"
-            "Please adjust genome min-max range to reduce the number of CDS.  \n"
+            f"Because there are too many features to be drawn (more than {MAX_FEATURE})"
+            ",  \nthe number of features to be drawn is limited to only long sequence."
         )
         warning_placeholder.warning(warning_msg)
 
@@ -332,7 +333,7 @@ if upload_files:
         inverted_cross_link_color=inverted_cross_link_color,
         target_feature_types=target_feature_types,
         feature2color=feature2color,
-        cds_limit_num=CDS_LIMIT,
+        max_feature=MAX_FEATURE,
     )
 
     # Show figure
