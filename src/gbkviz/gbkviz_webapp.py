@@ -42,8 +42,8 @@ else:
         # Genbank files upload widgets
         upload_files: Optional[List[UploadedFile]]
         upload_files = st.file_uploader(
-            label="Upload your genbank files (*.gb|*.gbk)",
-            type=["gb", "gbk"],
+            label="Upload your genbank files (*.gb|*.gbk|*.gbff)",
+            type=["gb", "gbk", "gbff"],
             accept_multiple_files=True,
         )
 
