@@ -209,8 +209,12 @@ class DrawGenbankFig:
             max_range_feature = self.max_range_feature
 
             for feature in range_features:
-                start, end = feature.location.start, feature.location.end
+                start = feature.location.parts[0].start
+                end = feature.location.parts[-1].end
                 if isinstance(start, int) and isinstance(end, int):
+                    # Exclude CDS that straddle start postion
+                    if start > end:
+                        continue
                     # Filtering feature to be drawn
                     feature_length = end - start + 1
                     if (

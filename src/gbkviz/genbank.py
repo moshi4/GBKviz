@@ -79,7 +79,7 @@ class Genbank:
         """
         range_features = []
         for feature in self.extract_all_features(feature_types):
-            start, end = feature.location.start, feature.location.end
+            start, end = feature.location.parts[0].start, feature.location.parts[-1].end
             if isinstance(start, int) and isinstance(end, int):
                 if (
                     self.min_range <= start <= self.max_range
