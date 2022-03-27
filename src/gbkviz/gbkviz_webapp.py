@@ -42,9 +42,14 @@ else:
         # Genbank files upload widgets
         upload_files: Optional[List[UploadedFile]]
         upload_files = st.file_uploader(
-            label="Upload your genbank files (*.gb|*.gbk|*.gbff)",
+            label="Upload genbank files (*.gb|*.gbk|*.gbff)",
             type=["gb", "gbk", "gbff"],
             accept_multiple_files=True,
+            help=(
+                "Genomes are displayed on each track in the order of file upload.  \n"
+                + "Since genome comparison is performed between adjacent genomes,  \n"
+                + "the order of upload is important."
+            ),
         )
 
 if upload_files:
@@ -128,7 +133,10 @@ if upload_files:
         step=0.1,
     )
     fig_align_type = fig_param_cols[1].radio(
-        label="Fig Align Type", options=["Left", "Center"], index=0
+        label="Fig Align Type",
+        options=["Left", "Center"],
+        index=0,
+        help=":warning: ScaleTicks is not displayed if 'Align Type' = 'Center'.",
     )
 
     # Target feature types widget
