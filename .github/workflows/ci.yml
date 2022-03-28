@@ -30,7 +30,9 @@ jobs:
         if: ${{ matrix.os=='ubuntu-latest' }}
 
       - name: Install MUMmer on MacOS
-        run: brew install mummer
+        run: |
+          brew upgrade
+          brew install mummer
         if: ${{ matrix.os=='macos-latest' }}
 
       - name: Install Poetry
