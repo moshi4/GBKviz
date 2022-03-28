@@ -9,18 +9,29 @@ on:
 
 jobs:
   CI_black-flake8-pytest:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        python-version: [3.8]
+        os: [ubuntu-latest, macos-latest]
+        python-version: [3.7, 3.8, 3.9]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Setup Python {{ matrix.python-version}}
+      - name: Setup Python ${{ matrix.python-version}}
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
+
+      - name: Install MUMmer on Ubuntu
+        run: |
+          sudo apt update -y
+          sudo apt install -y mummer
+        if: ${{ matrix.os=='ubuntu-latest' }}
+
+      - name: Install MUMmer on MacOS
+        run: brew install mummer
+        if: ${{ matrix.os=='macos-latest' }}
 
       - name: Install Poetry
         run: |
