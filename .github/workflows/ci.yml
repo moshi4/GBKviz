@@ -32,7 +32,7 @@ jobs:
       - name: Install MUMmer on MacOS
         run: |
           brew update
-          brew tap homebrew/science
+          brew tap brewsci/bio
           brew install mummer
         if: ${{ matrix.os=='macos-latest' }}
 
