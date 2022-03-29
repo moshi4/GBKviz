@@ -43,7 +43,6 @@ pytest-cov = "^3.0.0"
 
 [tool.poetry.scripts]
 gbkviz_webapp = "gbkviz.scripts.launch_gbkviz_webapp:main"
-download_gbk_from_acc = "gbkviz.scripts.download_gbk_from_acc:main"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
