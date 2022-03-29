@@ -3,7 +3,7 @@ import os
 import subprocess as sp
 from pathlib import Path
 
-__version__ = "1.1.4"
+__version__ = "1.1.5"
 
 
 def main():
