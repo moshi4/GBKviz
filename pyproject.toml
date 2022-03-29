@@ -29,9 +29,9 @@ addopts = "--cov=src --tb=line --cov-report=xml --cov-report=term"
 testpaths = ["tests"]
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.7"
 biopython = "^1.79"
-reportlab = "^3.6.2"
+reportlab = "3.6.8"
 streamlit = "^1.5.0"
 
 [tool.poetry.dev-dependencies]
