@@ -43,7 +43,9 @@ jobs:
           echo "$HOME/.poetry/bin" >> $GITHUB_PATH
 
       - name: Install Dependencies
-        run: poetry install -n
+        run: |
+          poetry install -n
+          poetry update -n
 
       - name: Run black format check
         run: poetry run black src --check --diff --verbose
