@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import List
 
 import streamlit as st
-from streamlit.script_run_context import get_script_run_ctx
+from streamlit.scriptrunner import get_script_run_ctx
 from streamlit.uploaded_file_manager import UploadedFile, UploadedFileRec
 
 from gbkviz.genbank import Genbank
