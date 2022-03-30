@@ -1,9 +1,11 @@
+import itertools
+import multiprocessing as mp
 import os
 import platform
 import shutil
 import subprocess as sp
 from pathlib import Path
-from typing import List, Union
+from typing import List, Tuple, Union
 
 import streamlit as st
 
@@ -40,34 +42,18 @@ class GenomeAlign:
         Returns:
             List[AlignCoords]: Genome alignment coordinates
         """
-        align_coords: List[AlignCoord] = []
+        # Prepare data for run MUMmer with multiprocessing
+        mp_data_list: List[Tuple[Path, Path, int]] = []
         for idx in range(0, self.genome_num - 1):
             fa_file1 = self.genome_fasta_files[idx]
             fa_file2 = self.genome_fasta_files[idx + 1]
+            mp_data_list.append((fa_file1, fa_file2, idx))
 
-            # Run genome alignment using nucmer or promer
-            prefix = self.outdir / f"out{idx}"
-            delta_file = prefix.with_suffix(".delta")
-            cmd = f"{self._align_bin} {fa_file1} {fa_file2} --prefix={prefix}"
-            _ = sp.run(cmd, shell=True, capture_output=True, text=True)
+        # Run MUMmer with multiprocessing
+        with mp.Pool(processes=self._process_num) as p:
+            results = p.starmap(self._run_mummer, mp_data_list)
 
-            # Run delta-filter to map 'one-to-one' or 'many-to-many' relation
-            filter_delta_file = self.outdir / f"filter_out{idx}.delta"
-            cmd = f"delta-filter {self._map_opt} {delta_file} > {filter_delta_file}"
-            _ = sp.run(cmd, shell=True, capture_output=True, text=True)
-
-            # Run show-coords to extract alingment coords
-            coords_file = self.outdir / f"coords{idx}.tsv"
-            cmd = f"show-coords -H -T {filter_delta_file} > {coords_file}"
-            _ = sp.run(cmd, shell=True, capture_output=True, text=True)
-
-            align_coords.extend(AlignCoord.parse(coords_file, self.seqtype))
-
-            # Delete work files
-            for work_file in (delta_file, filter_delta_file, coords_file):
-                os.unlink(work_file)
-
-        return align_coords
+        return list(itertools.chain.from_iterable(results))
 
     @property
     def genome_num(self) -> int:
@@ -93,6 +79,46 @@ class GenomeAlign:
             return "-m"
         else:
             raise ValueError(f"Invalid maptype '{self.maptype}'")
+
+    @property
+    def _process_num(self) -> int:
+        cpu_num = os.cpu_count()
+        return 1 if cpu_num is None or cpu_num == 1 else cpu_num - 1
+
+    def _run_mummer(self, fa_file1: Path, fa_file2: Path, idx: int) -> List[AlignCoord]:
+        """Run MUMmer function for multiprocessing
+
+        Args:
+            fa_file1 (Path): Input genome fasta 1
+            fa_file2 (Path): Input genome fasta 2
+            idx (int): Multiprocessing index
+
+        Returns:
+            List[AlignCoord]: AlignCoord list
+        """
+        # Run genome alignment using nucmer or promer
+        prefix = self.outdir / f"out{idx}"
+        delta_file = prefix.with_suffix(".delta")
+        cmd = f"{self._align_bin} {fa_file1} {fa_file2} --prefix={prefix}"
+        _ = sp.run(cmd, shell=True, capture_output=True, text=True)
+
+        # Run delta-filter to map 'one-to-one' or 'many-to-many' relation
+        filter_delta_file = self.outdir / f"filter_out{idx}.delta"
+        cmd = f"delta-filter {self._map_opt} {delta_file} > {filter_delta_file}"
+        _ = sp.run(cmd, shell=True, capture_output=True, text=True)
+
+        # Run show-coords to extract alingment coords
+        coords_file = self.outdir / f"coords{idx}.tsv"
+        cmd = f"show-coords -H -T {filter_delta_file} > {coords_file}"
+        _ = sp.run(cmd, shell=True, capture_output=True, text=True)
+
+        align_coords = AlignCoord.parse(coords_file, self.seqtype)
+
+        # Delete work files
+        for work_file in (delta_file, filter_delta_file, coords_file):
+            os.unlink(work_file)
+
+        return align_coords
 
     @staticmethod
     def check_requirements() -> bool:
