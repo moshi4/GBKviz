@@ -3,7 +3,7 @@ import os
 import subprocess as sp
 from pathlib import Path
 
-__version__ = "1.1.5"
+from gbkviz.__version__ import __version__
 
 
 def main():

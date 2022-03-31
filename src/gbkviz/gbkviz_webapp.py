@@ -6,6 +6,7 @@ from streamlit.delta_generator import DeltaGenerator
 from streamlit.uploaded_file_manager import UploadedFile
 
 from gbkviz import util
+from gbkviz.__version__ import __version__
 from gbkviz.align_coord import AlignCoord
 from gbkviz.draw_genbank_fig import DrawGenbankFig
 from gbkviz.genbank import Genbank
@@ -30,7 +31,7 @@ st.header("GBKviz: Genbank Data Visualization WebApp")
 
 # GitHub repository hyperlink
 repo_hyperlink = "[GBKviz (GitHub)](https://github.com/moshi4/GBKviz/)"
-st.sidebar.markdown(repo_hyperlink)
+st.sidebar.markdown(repo_hyperlink + f" v{__version__}")
 
 # Load example files or Upload files
 if st.sidebar.checkbox(label="Load example genbank files", value=False):
