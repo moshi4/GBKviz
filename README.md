@@ -3,7 +3,9 @@
 [![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io/moshi4/gbkviz/main/src/gbkviz/gbkviz_webapp.py)
 ![Python3](https://img.shields.io/badge/Language-Python3-steelblue)
 ![License](https://img.shields.io/badge/License-MIT-steelblue)
-[![Latest PyPI version](https://img.shields.io/pypi/v/gbkviz.svg)](https://pypi.python.org/pypi/gbkviz)  
+[![Latest PyPI version](https://img.shields.io/pypi/v/gbkviz.svg)](https://pypi.python.org/pypi/gbkviz)
+[![Bioconda](https://img.shields.io/conda/vn/bioconda/gbkviz.svg?color=green)](https://anaconda.org/bioconda/gbkviz)
+[![CI](https://github.com/moshi4/GBKviz/actions/workflows/ci.yml/badge.svg)](https://github.com/moshi4/GBKviz/actions/workflows/ci.yml)
 
 ## Overview
 
@@ -15,23 +17,22 @@ This software is developed under the strong inspiration of [EasyFig](https://mjs
 
 ![GBKviz Demo GIF](https://raw.githubusercontent.com/moshi4/GBKviz/main/src/gbkviz/gbkviz_demo.gif)  
 If you are interested, click [here](https://share.streamlit.io/moshi4/gbkviz/main/src/gbkviz/gbkviz_webapp.py) to try GBKviz on Streamlit Cloud.  
->:warning: Due to the limited resources in Streamlit Cloud, it may be unstable.  
+>:warning: Due to the limited resources in Streamlit Cloud, it may be unstable.
+> When performing comparative analysis of users' genomic data, use the stable, locally installed version.
 
 ## Installation
 
-GBKviz is implemented in Python3 (Tested on Ubuntu20.04)
+GBKviz is implemented in Python3. MUMmer is required for genome comparison.
 
-Install PyPI stable version with pip:
+**Install bioconda package:**
+
+    conda install -c bioconda -c conda-forge gbkviz
+
+**Install PyPI package:**
 
     pip install gbkviz
 
-If you want to enable genome comparison in GBKviz, MUMmer is required.  
-
-Install MUMmer with apt command (Ubuntu):
-
-    sudo apt install mummer
-
-GBKviz can also be available with Docker:
+**Use Docker ([Docker Image](https://hub.docker.com/r/moshi4/gbkviz/tags)):**
 
     docker pull moshi4/gbkviz:latest
     docker run -d -p 8501:8501 moshi4/gbkviz:latest
@@ -73,7 +74,7 @@ Fig.4: Simple CDS visualization with gene label
 
 ## Genome Comparison
 
-In GBKviz, [MUMmer](https://github.com/mummer4/mummer) is used as genome comparison tool.  
+In GBKviz, [MUMmer](https://github.com/mummer4/mummer) is used as genome comparison tool.
 Following four genome comparison methods are available.
 
 - Nucleotide One-to-One Mapping
